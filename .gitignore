@@ -45,3 +45,5 @@ report_charts_auto/
 # OS
 .DS_Store
 Thumbs.db
+
+tools/
