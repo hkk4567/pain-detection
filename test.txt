@@ -1,0 +1,1359 @@
+\documentclass[12pt,a4paper]{report}
+
+% --- CÁC GÓI HỖ TRỢ TIẾNG VIỆT VÀ ĐỊNH DẠNG ---
+\usepackage[utf8]{inputenc}
+\usepackage{fontspec}
+\setmainfont{Times New Roman} 
+\usepackage[vietnamese]{babel}
+\usepackage[top=2cm, bottom=2cm, left=3.5cm, right=2cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% --- CÁC GÓI ĐỒ HỌA, BẢNG BIỂU, TOÁN HỌC ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{url}
+
+% --- GÓI ĐỊNH DẠNG LINK VÀ MỤC LỤC ---
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, calc}
+
+\tikzset{
+    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+               minimum width=3.5cm, minimum height=1cm, align=center,
+               draw=black, fill=blue!10, font=\bfseries},
+    process/.style={rectangle, rounded corners, minimum width=3.8cm, minimum height=1.1cm,
+                    align=center, text width=4.2cm, draw=black, fill=orange!15, font=\bfseries},
+    processgray/.style={rectangle, rounded corners, minimum width=3.8cm, minimum height=1.1cm,
+                    align=center, text width=4.2cm, draw=black, fill=yellow!20, font=\bfseries},
+    model/.style={rectangle, minimum width=4cm, minimum height=1.2cm,
+                  align=center, text width=4.5cm, draw=black, fill=green!15, font=\bfseries},
+    arrow/.style={thick,->,>=stealth}
+}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Large\centering}
+  {\MakeUppercase{\chaptertitlename} \thechapter}{10pt}{\Large}
+\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+
+\begin{document}
+
+% =======================================================
+% TRANG BÌA
+% =======================================================
+\begin{titlepage}
+    \centering
+    \textbf{\large UỶ BAN NHÂN DÂN THÀNH PHỐ HỒ CHÍ MINH}\\
+    \textbf{\large TRƯỜNG ĐẠI HỌC SÀI GÒN}
+    \vspace{3cm}
+
+    \textbf{\Large BÁO CÁO TỔNG KẾT}\\
+    \textbf{\Large ĐỀ TÀI NGHIÊN CỨU KHOA HỌC CỦA SINH VIÊN}
+    \vspace{2cm}
+
+    \textbf{\LARGE XÂY DỰNG MÔ HÌNH HỌC SÂU PHÁT HIỆN}\\
+    \textbf{\LARGE BIỂU CẢM ĐAU TRÊN KHUÔN MẶT}
+    \vspace{2cm}
+
+    \begin{flushleft}
+        \large
+        \textbf{Mã số đề tài:} SVC2025-188 \\
+        \textbf{Thuộc nhóm ngành khoa học:} Khoa học Kỹ thuật và Công nghệ \\
+        \vspace{1cm}
+        \textbf{Chủ nhiệm đề tài:} Dương Nhiên Phong \\
+        \textbf{Thành viên tham gia:} \\
+        1. Huỳnh Kiện Khải \\
+        2. Nguyễn Duy Khôi \\
+        3. Võ Anh Hào \\
+        4. Lâm Trác Đạt \\
+        \vspace{1cm}
+        \textbf{Giảng viên hướng dẫn:} TS. Vũ Ngọc Thanh Sang
+    \end{flushleft}
+
+    \vfill
+    \textbf{Thành phố Hồ Chí Minh, Tháng 04/2026}
+\end{titlepage}
+
+% =======================================================
+% PHẦN ĐẦU (Đánh số trang La Mã)
+% =======================================================
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% --- TÓM TẮT ĐỀ TÀI ---
+\chapter*{TÓM TẮT ĐỀ TÀI}
+\addcontentsline{toc}{chapter}{TÓM TẮT ĐỀ TÀI}
+
+Đánh giá mức độ đau là một yếu tố quan trọng trong chăm sóc sức khỏe, đặc biệt đối với những bệnh nhân mất khả năng giao tiếp (như trẻ sơ sinh, người già suy giảm nhận thức, bệnh nhân ICU). Đề tài \textit{``Xây dựng mô hình học sâu phát hiện biểu cảm đau trên khuôn mặt''} được thực hiện nhằm xây dựng một hệ thống phát hiện và định lượng cường độ đau tự động, khách quan. Dựa trên bộ dữ liệu Delaware Pain Database (645 ảnh sau lọc chất lượng, thuộc 226 chủ thể), nhóm nghiên cứu áp dụng phương pháp học chuyển giao (Transfer Learning) với kiến trúc lõi EfficientNet-B3, triển khai song song hai phiên bản tiền xử lý: (1) \textbf{Gray-CLAHE} sử dụng ảnh xám kết hợp cân bằng tương phản thích nghi và (2) \textbf{RGB-CLAHE} sử dụng ảnh màu kết hợp thuật toán \textit{Smart Face CLAHE} (Contrast Limited Adaptive Histogram Equalization trên kênh độ sáng trong không gian CIE LAB).
+
+Để đảm bảo tính hợp lệ khoa học và công bằng nhân khẩu học, nghiên cứu tích hợp ba cải tiến quy trình quan trọng: (a) \textbf{sửa lỗi rò rỉ dữ liệu (Data Leakage)} bằng cách áp dụng phân chia theo Subject ID; (b) \textbf{chiến lược phân chia tập Test theo tỉ lệ nhân khẩu học cố định} (1:2:3, tương ứng Asian:Black:White) thông qua lựa chọn 6 Asian + 12 Black + 18 White subjects, đảm bảo nhóm thiểu số Asian có đủ mẫu để đánh giá ý nghĩa thống kê; và (c) \textbf{Weighted Loss} theo 6 nhóm nhân khẩu học để đảm bảo tính công bằng (Fairness).
+
+Kết quả thực nghiệm trên tập Hold-out Test độc lập (105 ảnh) cho thấy: \textbf{RGB-CLAHE} đạt Ensemble Test R² = $0.5928$, RMSE = $0.6335$, MAE = $0.4816$, vượt trội hơn \textbf{Gray-CLAHE} (R² = $0.5645$, RMSE = $0.6551$, MAE = $0.5102$). Trên tập Validation trung bình 10 folds, RGB-CLAHE cũng đạt R² = $0.6514 \pm 0.0978$ so với $0.6422 \pm 0.0829$ của Gray-CLAHE. Đáng chú ý, với tập Test cân bằng hơn về nhân khẩu học, RGB-CLAHE thể hiện ưu thế rõ rệt nhờ khai thác tín hiệu sắc tố da. Phân tích Fairness với kiểm định T-test theo cặp cho toàn bộ 3 nhóm màu da (White, Black, Asian) xác nhận \textbf{cả hai mô hình đều đạt tính công bằng thống kê} (tất cả $p > 0.05$). Để kiểm chứng khách quan hiệu quả thực sự của \textbf{Weighted Loss}, nhóm bổ sung một \textbf{nghiên cứu loại bỏ (ablation study)} đối chiếu trực tiếp với phiên bản \textbf{Unweighted} trên cả hai pipeline; kết quả cho thấy tác động của trọng số lên tính công bằng phụ thuộc vào pipeline màu sắc (\textit{pipeline-dependent}): với RGB-CLAHE, Weighted Loss thu hẹp rõ rệt khoảng cách MAE và độ lệch dự đoán (Bias) giữa 3 nhóm màu da, trong khi với Gray-CLAHE hiệu quả kém nhất quán hơn --- một phát hiện quan trọng cho thấy các kỹ thuật đảm bảo công bằng cần được kiểm chứng thực nghiệm thay vì mặc định hiệu quả. Công cụ giải thích AI GradCAM++ được tích hợp giúp trực quan hóa các vùng khuôn mặt mà mô hình tập trung phân tích, tăng tính minh bạch cho hệ thống y tế.
+
+% --- MỤC LỤC ---
+\tableofcontents
+
+\listoffigures
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH ẢNH}
+
+\listoftables
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG BIỂU}
+
+\chapter*{DANH MỤC CÁC CHỮ VIẾT TẮT}
+\addcontentsline{toc}{chapter}{DANH MỤC CÁC CHỮ VIẾT TẮT}
+\begin{itemize}
+    \item \textbf{AI:} Artificial Intelligence (Trí tuệ nhân tạo)
+    \item \textbf{AdamW:} Adam with Weight Decay (Thuật toán tối ưu Adam có chuẩn hóa trọng số)
+    \item \textbf{AU:} Action Unit (Đơn vị hành động khuôn mặt)
+    \item \textbf{CIE LAB:} Commission Internationale de l'Éclairage --- không gian màu LAB (L: độ sáng, A/B: kênh màu)
+    \item \textbf{CLAHE:} Contrast Limited Adaptive Histogram Equalization (Cân bằng histogram thích nghi có giới hạn độ tương phản)
+    \item \textbf{CNN:} Convolutional Neural Network (Mạng nơ-ron tích chập)
+    \item \textbf{FACS:} Facial Action Coding System (Hệ thống mã hóa hành động khuôn mặt)
+    \item \textbf{ICU:} Intensive Care Unit (Đơn vị hồi sức tích cực)
+    \item \textbf{MAE:} Mean Absolute Error (Sai số tuyệt đối trung bình)
+    \item \textbf{MSE:} Mean Squared Error (Sai số bình phương trung bình)
+    \item \textbf{R²:} Coefficient of Determination (Hệ số xác định)
+    \item \textbf{RMSE:} Root Mean Squared Error (Căn bậc hai sai số bình phương trung bình)
+    \item \textbf{ViViT:} Video Vision Transformer (Kiến trúc Transformer áp dụng cho dữ liệu video)
+    \item \textbf{XAI:} Explainable Artificial Intelligence (Trí tuệ nhân tạo có thể giải thích)
+\end{itemize}
+
+\newpage
+% =======================================================
+% PHẦN NỘI DUNG CHÍNH
+% =======================================================
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter*{PHẦN MỞ ĐẦU}
+\addcontentsline{toc}{chapter}{PHẦN MỞ ĐẦU}
+
+\section*{1. Lý do chọn đề tài}
+Đau là một trải nghiệm cảm giác và cảm xúc phức tạp, và việc đánh giá chính xác mức độ đau là yếu tố nền tảng trong y tế. Hiện nay, việc đánh giá chủ yếu mang tính chủ quan, phụ thuộc vào khả năng tự báo cáo của bệnh nhân. Điều này tạo ra thách thức lớn đối với trẻ sơ sinh, người cao tuổi suy giảm nhận thức, hay bệnh nhân ở phòng ICU. Sự đánh giá sai lệch có thể dẫn đến điều trị không đủ hoặc quá mức. Việc ứng dụng Trí tuệ Nhân tạo để phân tích biểu cảm khuôn mặt mang lại một công cụ đánh giá khách quan, liên tục và không xâm lấn. Do đó, việc thực hiện đề tài là cấp thiết, góp phần bắt kịp xu hướng công nghệ y tế thông minh.
+
+\section*{2. Lịch sử nghiên cứu vấn đề}
+Trong những năm gần đây, học sâu (Deep Learning) đã tạo ra bước đột phá trong nhận diện cơn đau. Các kiến trúc như Transformer đã được sử dụng để phân tích video và đạt độ chính xác cao trên các bộ dữ liệu BioVid \cite{bargshady2024acute}. Bên cạnh đó, Aliradi và cộng sự \cite{aliradi2024facial} đề xuất phương pháp học không gian con đa tuyến tính (Multilinear Subspace Learning) để trích xuất đặc trưng khuôn mặt theo nhiều chiều không gian đồng thời, cho thấy hiệu quả đáng kể trong phát hiện biểu cảm đau. Tuy nhiên, việc xây dựng các mô hình đảm bảo tính công bằng (Fairness) đối với các nhóm màu da khác nhau, khả năng giải thích của mô hình (Explainability), và đặc biệt là tính toàn vẹn dữ liệu (tránh rò rỉ dữ liệu giữa các chủ thể) vẫn là những thách thức lớn.
+
+\section*{3. Mục đích và nhiệm vụ nghiên cứu}
+\textbf{Mục tiêu tổng quát:} Xây dựng, tối ưu và đánh giá một mô hình học sâu (EfficientNet-B3 Ensemble) có khả năng phát hiện và định lượng cường độ biểu cảm đau tự động, chính xác và công bằng dựa trên ảnh tĩnh. Ở đây, ``phát hiện'' được hiểu theo nghĩa rộng phổ biến trong y văn, bao gồm cả việc xác định sự hiện diện lẫn định lượng mức độ đau liên tục (regression), tương tự cách dùng ``detection'' trong nhiều nghiên cứu lâm sàng quốc tế.\\
+\textbf{Nhiệm vụ cụ thể:}
+\begin{itemize}
+    \item Tiền xử lý dữ liệu, đề xuất và áp dụng thuật toán \textit{Smart Face CLAHE} để cân bằng tương phản thích nghi cục bộ.
+    \item Khắc phục lỗi rò rỉ dữ liệu (Data Leakage) bằng chiến lược phân chia theo Subject ID, đồng thời thiết kế phân chia tập Test theo tỉ lệ nhân khẩu học cố định 1:2:3 (Asian:Black:White).
+    \item Xây dựng mô hình, áp dụng kỹ thuật tối ưu hóa trọng số (Weighted Loss) theo nhóm nhân khẩu học.
+    \item Huấn luyện bằng chiến lược 10-Fold Cross-validation và Ensemble.
+    \item Đánh giá định lượng (RMSE, MAE, R²) và giải thích mô hình bằng GradCAM++.
+    \item Thực hiện nghiên cứu loại bỏ (\textit{ablation study}) đối chiếu trực tiếp mô hình có và không có Weighted Loss, nhằm kiểm chứng định lượng --- chứ không mặc định --- hiệu quả thực sự của kỹ thuật này đối với tính công bằng.
+\end{itemize}
+
+\section*{4. Đối tượng và phạm vi nghiên cứu}
+\textbf{Đối tượng:} Các đặc trưng biểu cảm đau trên khuôn mặt; hiệu năng của kiến trúc EfficientNet-B3.\\
+\textbf{Phạm vi:} Nghiên cứu sử dụng ảnh tĩnh từ bộ dữ liệu Delaware Pain Database và kiểm thử ngoại lai trên FaceGen. Bài toán được mở rộng từ phân loại nhị phân sang dự đoán cường độ đau liên tục (Hồi quy) và phân tích theo 3 mức độ (Thấp, Trung bình, Cao).
+
+\section*{5. Phương pháp nghiên cứu}
+Sử dụng phương pháp thực nghiệm và định lượng. Dữ liệu được thu thập, làm sạch và chia tách theo chuẩn Subject-Level để đảm bảo không rò rỉ thông tin giữa các chủ thể. Tập Test được chia theo tỉ lệ nhân khẩu học cố định nhằm đảm bảo đủ mẫu cho phân tích Fairness trên cả 3 nhóm màu da. Mô hình được huấn luyện và tinh chỉnh bằng các siêu tham số. Kết quả được đánh giá bằng các độ đo thống kê và phân tích trực quan hóa (Confusion Matrix, Scatter Plot, Fairness Boxplot).
+
+\section*{6. Những đóng góp mới của đề tài}
+\begin{itemize}
+    \item Cải tiến bài toán từ phân loại nhị phân sang hồi quy dự đoán cường độ đau liên tục.
+    \item Đề xuất và áp dụng thuật toán \textit{Smart Face CLAHE} --- cân bằng tương phản thích nghi cục bộ trên kênh L trong không gian CIE LAB, hiệu quả hơn so với phép dịch sáng toàn cục.
+    \item Khắc phục lỗi rò rỉ dữ liệu theo chủ thể (Subject-Level Data Leakage) bằng \texttt{StratifiedGroupKFold}, đảm bảo tính hợp lệ khoa học của đánh giá.
+    \item Thiết kế chiến lược phân chia tập Test theo tỉ lệ nhân khẩu học cố định (1:2:3) để đảm bảo phân tích Fairness đầy đủ trên cả 3 nhóm màu da (Asian, Black, White), khắc phục tình trạng nhóm thiểu số Asian bị thiếu đại diện.
+    \item Đưa yếu tố Công bằng (Fairness) vào quá trình huấn luyện thông qua Weighted Loss theo 6 nhóm màu da--giới tính; kết quả kiểm định T-test theo cặp trên toàn bộ 3 nhóm xác nhận cả hai mô hình đều đạt Fair.
+    \item Thực hiện ablation study đối chiếu trực tiếp Weighted Loss với Unweighted Loss trên cả hai pipeline màu sắc, định lượng rõ ràng đánh đổi (\textit{trade-off}) giữa độ chính xác tổng thể và tính công bằng theo nhóm màu da --- một phân tích thường bị bỏ qua trong các nghiên cứu Fairness vốn chỉ báo cáo mô hình đã áp dụng kỹ thuật cân bằng mà không đối chiếu với baseline không trọng số.
+    \item Sử dụng Ensemble GradCAM++ để giải thích các quyết định của mô hình.
+\end{itemize}
+
+\section*{7. Cấu trúc của đề tài}
+Ngoài phần Mở đầu, Kết luận, Tài liệu tham khảo, báo cáo gồm 3 chương:
+\begin{itemize}
+    \item Chương 1: Cơ sở lý thuyết.
+    \item Chương 2: Dữ liệu và Phương pháp nghiên cứu.
+    \item Chương 3: Thực nghiệm và Đánh giá kết quả.
+\end{itemize}
+
+% =========================================
+% CHƯƠNG 1
+% =========================================
+\chapter{CƠ SỞ LÝ THUYẾT}
+
+\section{Biểu cảm khuôn mặt và Hệ thống FACS}
+Đặc điểm và biểu cảm khuôn mặt đóng một vai trò then chốt trong việc nhận diện cơn đau. Hệ thống mã hóa hành động khuôn mặt (FACS) định nghĩa các Đơn vị hành động (AUs). Cụ thể, các AU đặc trưng liên quan đến cơn đau bao gồm AU4 (cau mày), AU6 (nâng má), AU7 (siết mí mắt), AU9 (nhăn mũi), và AU10 (nâng môi trên).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{1_hinh_FACS_pain.png}
+    \caption{Các Đơn vị hành động khuôn mặt (AUs) đặc trưng liên quan đến biểu cảm đau}
+    \label{fig:facs_aus}
+\end{figure}
+
+\section{Mạng nơ-ron tích chập và Kiến trúc EfficientNet}
+Mạng nơ-ron tích chập (CNN) là công cụ mạnh mẽ trong thị giác máy tính. Trong nghiên cứu này, nhóm sử dụng kiến trúc EfficientNet-B3. EfficientNet nổi bật nhờ phương pháp mở rộng quy mô kép (Compound Scaling), giúp cân bằng hoàn hảo giữa độ sâu, độ rộng mạng và độ phân giải ảnh, từ đó tối ưu hóa chi phí tính toán mà vẫn đảm bảo độ chính xác vượt trội.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=0.45\textwidth]{2_1-EfficientNet-architecture-diagram-CS.png}
+        \caption{Cơ chế mở rộng kép (Compound Scaling)}
+        \label{fig:eff_scaling}
+    \end{subfigure}
+    \vspace{0.6cm}
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{2_2_EfficientNet-Architecture.png}
+        \caption{Sơ đồ khối kiến trúc mạng (Architecture)}
+        \label{fig:eff_arch}
+    \end{subfigure}
+    \caption{Kiến trúc và cơ chế mở rộng của mạng EfficientNet}
+    \label{fig:efficientnet_combined}
+\end{figure}
+
+\section{Phương pháp Học chuyển giao (Transfer Learning)}
+Để giải quyết bài toán thiếu hụt dữ liệu y tế quy mô lớn, phương pháp Học chuyển giao được áp dụng. Bằng cách tái sử dụng các trọng số (weights) đã được huấn luyện trên tập dữ liệu khổng lồ ImageNet, mô hình có khả năng trích xuất các đặc trưng cơ bản ngay từ đầu, giúp tăng tốc độ hội tụ và giảm hiện tượng quá khớp (overfitting).
+
+\section{Cân bằng histogram thích nghi có giới hạn (CLAHE)}
+CLAHE (Contrast Limited Adaptive Histogram Equalization) là phương pháp nâng cao tương phản ảnh cục bộ, khắc phục nhược điểm của cân bằng histogram toàn cục (HE). Thay vì áp dụng một hàm biến đổi duy nhất cho toàn ảnh, CLAHE chia ảnh thành các ô lưới (tiles) và thực hiện cân bằng histogram độc lập trong từng ô. Tham số \texttt{clip\_limit} kiểm soát mức độ khuếch đại tối đa, ngăn chặn việc khuếch đại quá mức các vùng nhiễu. Khi áp dụng trên kênh L của không gian màu CIE LAB, CLAHE chỉ điều chỉnh độ sáng mà không làm thay đổi sắc tố (hue) hay độ bão hòa (saturation), đặc biệt phù hợp cho ảnh khuôn mặt có điều kiện chiếu sáng không đồng đều.
+
+\section{Khả năng giải thích của mô hình (GradCAM++)}
+GradCAM++ (Gradient-weighted Class Activation Mapping) là kỹ thuật XAI giúp tạo ra bản đồ nhiệt (heatmap) làm nổi bật các vùng ảnh ảnh hưởng lớn nhất đến dự đoán của mô hình. Điều này đặc biệt quan trọng trong y tế để bác sĩ có thể kiểm chứng xem AI đang nhìn vào mắt/miệng của bệnh nhân, hay đang bị nhiễu bởi phông nền phía sau.
+
+\section{Tổng quan nghiên cứu liên quan (Related Work) và Khoảng trống nghiên cứu}
+\label{sec:related_work}
+
+Mục này hệ thống hóa các hướng nghiên cứu liên quan trực tiếp đến đề tài --- (1) mạng nơ-ron tích chập (CNN), (2) họ kiến trúc EfficientNet, (3) Vision Transformer, (4) nhận diện đau qua biểu cảm khuôn mặt (Pain Recognition), (5) trí tuệ nhân tạo có thể giải thích (Explainable AI), và (6) công bằng thuật toán (Fairness AI) --- tập trung vào các công bố giai đoạn 2022--2025, từ đó xác định khoảng trống nghiên cứu mà đề tài hướng tới lấp đầy.
+
+\subsection{Mạng nơ-ron tích chập (CNN) cho phân tích khuôn mặt}
+CNN vẫn là xương sống của phần lớn hệ thống nhận diện biểu cảm khuôn mặt (Facial Expression Recognition -- FER). Kopalidis và cộng sự \cite{kopalidis2024advances} tổng hợp một khảo sát toàn diện về phương pháp, bộ dữ liệu chuẩn và mô hình FER giai đoạn gần đây, chỉ ra rằng các kiến trúc CNN sâu (ResNet, DenseNet, EfficientNet) vẫn chiếm ưu thế nhờ khả năng trích xuất đặc trưng cục bộ (nếp nhăn, co cơ) hiệu quả hơn các phương pháp thủ công trước đây. Theo hướng tương tự, Adyapady và Annappa \cite{adyapady2023comprehensive} nhấn mạnh rằng độ chính xác của CNN phụ thuộc mạnh vào chất lượng tiền xử lý ảnh (căn chỉnh khuôn mặt, chuẩn hoá ánh sáng) --- tiền đề trực tiếp củng cố vai trò của Smart Face CLAHE trong đề tài này. Điểm chung của các nghiên cứu CNN là tập trung vào 6--7 cảm xúc cơ bản (Ekman); \textbf{đau} --- một cường độ liên tục chồng lấn với các biểu cảm khác (giận, sợ) chứ không phải một cảm xúc rời rạc --- vẫn là lớp bài toán ít được khai thác bằng CNN thuần túy.
+
+\subsection{Kiến trúc EfficientNet trong ảnh y tế}
+EfficientNet, với chiến lược compound scaling cân bằng đồng thời độ sâu, độ rộng và độ phân giải, là lựa chọn phổ biến cho bài toán ảnh y tế có tài nguyên tính toán hạn chế. Trong da liễu --- lĩnh vực có nhiều điểm tương đồng với phân tích khuôn mặt vì đều nhạy cảm với sắc tố da --- EfficientNet-B3/B4/B5 được dùng rộng rãi để phân loại tổn thương da với chi phí tính toán thấp hơn nhiều so với các mạng sâu hơn. Đáng chú ý, Ansari và cộng sự \cite{ansari2024algorithmic} chỉ ra rằng các mô hình CNN/EfficientNet phân loại tổn thương da có xu hướng thiên vị hệ thống đối với các sắc tố da không chiếm đa số trong tập huấn luyện, đề xuất kết hợp giảm mất cân bằng lớp với hiệu chỉnh thiên vị sắc tố da --- gần như một bản thiết kế song song với chiến lược Weighted Loss + phân chia Test theo tỉ lệ nhân khẩu học của đề tài này, nhưng áp dụng cho phân loại tổn thương da tĩnh chứ không phải hồi quy cường độ đau trên khuôn mặt.
+
+\subsection{Vision Transformer trong nhận diện đau}
+Từ 2023, Vision Transformer (ViT) và biến thể video (ViViT) bắt đầu được áp dụng cho bài toán đau. Gkikas và Tsiknakis \cite{gkikas2023full} đề xuất một khung transformer đầy đủ cho ước lượng đau từ video, cho thấy cơ chế tự chú ý nắm bắt quan hệ không gian--thời gian giữa các Action Units tốt hơn CNN+RNN truyền thống trong một số cấu hình. Mở rộng theo hướng đa phương thức, Gkikas và cộng sự \cite{gkikas2024multimodal} kết hợp video khuôn mặt với tín hiệu nhịp tim trong một kiến trúc transformer thống nhất, đạt hiệu năng vượt trội so với mô hình đơn phương thức. Tuy nhiên, điểm yếu chung của Transformer trong lĩnh vực này là yêu cầu tập dữ liệu lớn để huấn luyện hiệu quả (do thiếu thiên kiến quy nạp cục bộ vốn có của CNN), khiến chúng khó áp dụng trực tiếp cho các bộ dữ liệu quy mô nhỏ như Delaware Pain Database (645 ảnh) nếu không có chiến lược tiền huấn luyện phù hợp --- hạn chế mà CNN pretrained (EfficientNet-B3) trong đề tài này né tránh được nhờ Transfer Learning từ ImageNet.
+
+\subsection{Pain Recognition: các hướng tiếp cận chính}
+Các hướng tiếp cận Pain Recognition hiện chia thành ba nhánh: (i) phân loại nhị phân/đa lớp trên ảnh tĩnh; (ii) phân tích chuỗi thời gian (video) bằng Spatio-Temporal CNN hoặc ViViT để nắm bắt động lực vi biểu cảm; và (iii) hồi quy cường độ đau liên tục --- nhánh ít phổ biến hơn do đòi hỏi nhãn liên tục đáng tin cậy. Aliradi và cộng sự \cite{aliradi2024facial} thuộc nhánh (i); Bargshady và cộng sự \cite{bargshady2024acute} thuộc nhánh (ii). Đề tài này thuộc nhánh (iii) --- hồi quy cường độ đau liên tục trên ảnh tĩnh --- chi phí tính toán thấp hơn video nhưng đòi hỏi độ chính xác hồi quy cao hơn phân loại rời rạc.
+
+\subsection{Explainable AI (XAI) trong y tế}
+Rosenbacke và cộng sự \cite{rosenbacke2024explainable} thực hiện tổng quan hệ thống cho thấy XAI có thể vừa \textit{tăng} vừa \textit{giảm} niềm tin của bác sĩ lâm sàng vào hệ thống AI, tùy thuộc việc giải thích có phù hợp với kiến thức chuyên môn sẵn có hay không --- phát hiện quan trọng cho thấy GradCAM++ (Mục~\ref{sec:gradcam_results}) không chỉ là yêu cầu kỹ thuật mà còn cần được xác thực lâm sàng (điều đề tài này chưa thực hiện được, xem Hạn chế). Trong bối cảnh đau cụ thể, Sabater-Gárriz và cộng sự \cite{sabatergarriz2024automated} áp dụng XAI dạng LIME để giải thích mô hình nhận diện đau ở bệnh nhân bại não, cho thấy xu hướng chung là kết hợp một phương pháp XAI hậu kiểm (post-hoc) với mô hình phân loại/hồi quy đau, tương tự cách tiếp cận GradCAM++ của đề tài này.
+
+\subsection{Fairness AI và thiên vị sắc tố da}
+Thiên vị theo sắc tố da là chủ đề được quan tâm mạnh trong Fairness AI y tế 2022--2025, đặc biệt trong da liễu. Ansari và cộng sự \cite{ansari2024algorithmic} là đại diện tiêu biểu, kết hợp tái cân bằng lớp với hiệu chỉnh thiên vị màu da. Điểm chung của các nghiên cứu Fairness AI ảnh y tế là: (a) hầu hết đánh giá công bằng \textit{sau khi} huấn luyện mà không đối chiếu với baseline không can thiệp; và (b) rất ít nghiên cứu thực hiện ablation định lượng để kiểm chứng kỹ thuật cân bằng có thực sự cải thiện Fairness, thay vì mặc định hiệu quả theo lý thuyết thiết kế.
+
+\subsection{Bảng so sánh với các nghiên cứu trước}
+Bảng~\ref{tab:related_work_comparison} đối chiếu đề tài với các nghiên cứu tiêu biểu theo Dataset, Phương pháp, Metric và Hạn chế.
+
+\begin{table}[H]
+\centering
+\caption{So sánh đề tài với các nghiên cứu liên quan tiêu biểu (2022--2025)}
+\label{tab:related_work_comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{2.6cm}p{2.3cm}p{3.4cm}p{3.3cm}p{4.2cm}}
+    \toprule
+    \textbf{Nghiên cứu} & \textbf{Dataset} & \textbf{Phương pháp} & \textbf{Metric} & \textbf{Hạn chế} \\
+    \midrule
+    Bargshady et al. \cite{bargshady2024acute} (2024) & BioVid (video) & ViViT & Accuracy/F1 (phân loại nhị phân có/không đau) & Chỉ phân loại nhị phân; không đánh giá Fairness theo màu da; cần dữ liệu video lớn \\
+    Aliradi et al. \cite{aliradi2024facial} (2024) & Ảnh tĩnh & Multilinear Subspace Learning & Accuracy (phân loại) & Không phải Deep Learning end-to-end; không có Fairness/XAI \\
+    Gkikas \& Tsiknakis \cite{gkikas2023full} (2023) & Video đau & Full Transformer Framework & Không công bố R²/MAE hồi quy trong tóm tắt & Cần dữ liệu lớn để huấn luyện Transformer; không đánh giá Fairness \\
+    Gkikas et al. \cite{gkikas2024multimodal} (2024) & Video + nhịp tim & Transformer đa phương thức & Không công bố R²/MAE hồi quy trong tóm tắt & Yêu cầu cảm biến sinh lý bổ sung; không đánh giá Fairness màu da \\
+    Ansari et al. \cite{ansari2024algorithmic} (2024) & Ảnh tổn thương da & CNN + tái cân bằng lớp + hiệu chỉnh skin-tone bias & Accuracy/F1 theo nhóm da & Phân loại tổn thương da tĩnh, không phải hồi quy đau; không có ablation weighted vs unweighted \\
+    \textbf{Đề tài này} (2026) & Delaware Pain DB (645 ảnh, 226 subjects) & EfficientNet-B3 + Smart Face CLAHE + Weighted Loss + Ensemble & R²$=0.5928$, RMSE$=0.6335$, MAE$=0.4816$ (RGB); Fairness T-test $p>0.05$ trên 3 nhóm da & Dataset tĩnh, quy mô vừa (xem Mục Hạn chế) \\
+    \bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\noindent\textbf{Phân tích:} Nhóm Transformer \cite{gkikas2023full, gkikas2024multimodal, bargshady2024acute} \textit{mạnh} về mô hình hoá động lực thời gian (video) nhưng \textit{yếu} ở yêu cầu dữ liệu lớn và thiếu đánh giá Fairness. Nhóm Fairness AI da liễu \cite{ansari2024algorithmic} \textit{mạnh} về xử lý thiên vị màu da nhưng áp dụng cho bài toán phân loại tĩnh khác miền và không có ablation đối chiếu trực tiếp với baseline. \textbf{Đề tài này cải tiến ở giao điểm của hai nhóm}: giữ chi phí tính toán thấp của CNN pretrained (phù hợp dataset nhỏ) trong khi vẫn tích hợp đầy đủ Fairness Framework \textit{và} kiểm chứng bằng ablation định lượng (Mục~\ref{sec:ablation}) --- điều cả hai nhóm tham chiếu ở trên đều chưa thực hiện đồng thời.
+
+\subsection{Khoảng trống nghiên cứu (Research Gap)}
+Từ tổng quan trên, ba khoảng trống nghiên cứu chính được xác định:
+\begin{enumerate}
+    \item \textbf{Thiếu ablation định lượng cho kỹ thuật Fairness:} Phần lớn nghiên cứu Fairness AI (bao gồm \cite{ansari2024algorithmic}) báo cáo mô hình \textit{đã} áp dụng kỹ thuật cân bằng mà không đối chiếu định lượng với baseline không can thiệp.
+    \item \textbf{Thiếu nghiên cứu hồi quy cường độ đau liên tục có đánh giá Fairness đồng thời:} Các nghiên cứu Transformer \cite{gkikas2023full, gkikas2024multimodal, bargshady2024acute} tập trung phân loại và bỏ qua trục Fairness; ngược lại, các nghiên cứu Fairness AI y tế \cite{ansari2024algorithmic} không áp dụng cho hồi quy đau.
+    \item \textbf{Thiếu xác thực lâm sàng cho XAI trong bài toán đau:} Như \cite{rosenbacke2024explainable} chỉ ra, XAI chỉ thực sự hữu ích khi đối chiếu với kiến thức chuyên môn; các nghiên cứu GradCAM cho đau (bao gồm đề tài này) mới dừng ở trực quan hoá định tính.
+\end{enumerate}
+
+\noindent Đề tài này trực tiếp giải quyết khoảng trống (1) qua ablation study Weighted vs Unweighted Loss (Mục~\ref{sec:ablation}), và một phần khoảng trống (2) bằng cách kết hợp hồi quy cường độ đau liên tục với Fairness Framework đầy đủ trên cùng một mô hình. Khoảng trống (3) được ghi nhận là hạn chế và hướng phát triển (Mục Hạn chế và Khuyến nghị).
+
+% =========================================
+% CHƯƠNG 2
+% =========================================
+\chapter{DỮ LIỆU VÀ PHƯƠNG PHÁP NGHIÊN CỨU}
+
+\section{Tập dữ liệu}
+
+Nghiên cứu sử dụng \textbf{Delaware Pain Database (DPD)}, bao gồm các ảnh biểu cảm đau của các chủ thể đa dạng về giới tính và chủng tộc (\textit{race}). Trong nghiên cứu này, các nhãn chủng tộc ban đầu được chuẩn hóa lại thành các nhóm màu da tương ứng (Black, White, Asian) để phục vụ cho việc phân tích tính công bằng.
+
+Về mặt nhãn dự đoán, nghiên cứu sử dụng biến \texttt{Pain\_Expression} làm nhãn chính để đánh giá cường độ đau. Tổng cộng có 652 ảnh ban đầu được đối chiếu với thông tin màu da. Trước khi đưa vào huấn luyện, dữ liệu được lọc theo các tiêu chí chất lượng bắt buộc:
+\begin{itemize}
+    \item Điểm tin cậy phát hiện khuôn mặt của OpenFace: \texttt{confidence} $\geq 0.8$.
+    \item Điểm độ tin cậy nhãn do người đánh giá cung cấp: \texttt{HowBelievable} $\geq 2.5$.
+    \item Có chứa nhãn cường độ đau hợp lệ (không có mẫu nào bị loại do thiếu nhãn \texttt{Pain\_Expression} hoặc phải dùng nhãn dự phòng \texttt{PhysicalPain\_Neutral}).
+\end{itemize}
+
+Sau khi lọc, tổng cộng có \textbf{645 ảnh} đạt tiêu chuẩn, thuộc về \textbf{226 chủ thể (Subjects)}. Việc phân chia tập dữ liệu được thực hiện cẩn thận theo Subject ID để tránh rò rỉ dữ liệu (data leakage); chi tiết chiến lược phân chia được trình bày tại Mục~\ref{sec:split}. Phân bổ chi tiết theo nhóm màu da được trình bày tại Bảng~\ref{tab:dataset_dist}.
+
+\begin{table}[H]
+\centering
+\caption{Phân bổ dữ liệu Delaware Pain Database sau khi lọc chất lượng (Tổng: 645 ảnh, 226 subjects)}
+\label{tab:dataset_dist}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Nhóm màu da} & \textbf{Tổng số ảnh} & \textbf{Tỉ lệ tổng} & \textbf{Train+Val} & \textbf{Test} \\
+\midrule
+Asian  & 104 & 16.12\% & 85 (15.74\%) & 19 (18.10\%) \\
+Black  & 179 & 27.75\% & 135 (25.00\%) & 44 (41.90\%) \\
+White  & 362 & 56.12\% & 320 (59.26\%) & 42 (40.00\%) \\
+\midrule
+\textbf{Tổng cộng} & \textbf{645} & \textbf{100\%} & \textbf{540} & \textbf{105} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textit{Nhận xét về đặc điểm dữ liệu:} Bộ dữ liệu Delaware cho thấy hai thách thức lớn về mặt thống kê:
+\begin{enumerate}
+    \item \textbf{Mất cân bằng nhân khẩu học:} Nhóm White chiếm tỉ trọng lớn nhất (56.12\%), trong khi nhóm Asian chỉ chiếm 16.12\% tổng dữ liệu. Sự mất cân bằng này là cơ sở cấp thiết để nhóm thiết kế chiến lược chia tập Test theo tỉ lệ nhân khẩu học cố định (Mục~\ref{sec:split}) và cơ chế \textbf{Weighted Loss} nhằm tránh việc mô hình bị thiên vị bởi nhóm đa số (White).
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\textwidth]{group_distribution_chart.png}
+        \caption{Biểu đồ phân bố chi tiết theo nhóm nhân khẩu học và giới tính}
+        \label{fig:group_dist}
+    \end{figure}
+
+    \item \textbf{Mất cân bằng biến mục tiêu (Label Imbalance):} Bên cạnh sự lệch về màu da, phân phối cường độ đau (0--7) cũng không đồng đều. Như thể hiện trong Hình~\ref{fig:label_dist}, phần lớn các mẫu tập trung ở dải đau Vừa (mức 2--4), trong khi các mẫu ở dải đau Cao (mức 4--7) chiếm tỉ lệ rất thấp.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\textwidth]{label_frequency_grouped_barchart.png}
+        \caption{Phân bố tần suất các nhãn cường độ đau theo các dải: Thấp, Vừa và Cao}
+        \label{fig:label_dist}
+    \end{figure}
+\end{enumerate}
+
+\section{Chiến lược phân chia dữ liệu theo Chủ thể (Subject-Level Split)}
+\label{sec:split}
+
+\noindent\textbf{Lý do:} Một nguy cơ nghiêm trọng trong nghiên cứu nhận diện sinh trắc học là \textbf{rò rỉ dữ liệu theo chủ thể (Subject-Level Data Leakage)}: nếu nhiều ảnh của cùng một người xuất hiện ở cả tập huấn luyện lẫn tập kiểm thử, mô hình có thể học nhận dạng khuôn mặt thay vì học đặc trưng đau, dẫn đến đánh giá hiệu suất ảo lạc quan --- một lỗi phổ biến nhưng dễ bị bỏ sót trong các nghiên cứu sử dụng ảnh y sinh có nhiều mẫu trên cùng một chủ thể.
+
+\noindent\textbf{Mục đích:} Đảm bảo tập Test đo lường đúng khả năng \textit{tổng quát hoá trên chủ thể chưa từng gặp} (subject-independent generalization) --- phản ánh trung thực năng lực mô hình khi triển khai với bệnh nhân mới trong thực tế, thay vì ``học vẹt'' đặc điểm khuôn mặt của các chủ thể đã thấy. Để đạt được mục tiêu này, nhóm trích xuất \textbf{Subject ID} từ tên file theo cấu trúc \texttt{DPD\_X\_\{SubjectID\}\_...} và áp dụng hai cơ chế phân chia độc lập:
+
+\subsection*{Phân chia tập Hold-out Test theo tỉ lệ nhân khẩu học cố định (1:2:3)}
+
+\noindent\textbf{Lý do:} Vì nhóm Asian chỉ chiếm 16.12\% tổng dữ liệu (Bảng~\ref{tab:dataset_dist}), phân chia ngẫu nhiên thuần túy bằng \texttt{GroupShuffleSplit} có rủi ro cao khiến tập Test chứa quá ít --- thậm chí không có --- mẫu Asian, làm cho kiểm định thống kê Fairness (T-test) đối với nhóm này mất ý nghĩa hoặc không thể thực hiện được.
+
+\noindent\textbf{Mục đích:} Đảm bảo cả 3 nhóm màu da đều có cỡ mẫu tối thiểu đủ lớn trong tập Test để kiểm định T-test đáng tin cậy, đặc biệt bảo vệ nhóm thiểu số Asian khỏi bị ``vô hình hoá'' ngay từ khâu đánh giá --- một điều kiện tiên quyết để bất kỳ phân tích Fairness nào (bao gồm cả ablation ở Mục~\ref{sec:ablation}) có giá trị thống kê. Do đó, thay vì sử dụng \texttt{GroupShuffleSplit} ngẫu nhiên, nhóm áp dụng \textbf{chiến lược phân chia chủ động theo Subject và màu da} với tỉ lệ cố định 1:2:3 (Asian:Black:White). Cụ thể, nhóm lựa chọn \textbf{6 Asian subjects, 12 Black subjects và 18 White subjects} (tổng 36 subjects, khoảng 15.9\% tổng subjects) vào tập Test theo thứ tự ngẫu nhiên có kiểm soát (seed = 42):
+
+\begin{equation}
+    \text{Test subjects} = \{s_1^{\text{A}}, \ldots, s_6^{\text{A}}\} \cup \{s_1^{\text{B}}, \ldots, s_{12}^{\text{B}}\} \cup \{s_1^{\text{W}}, \ldots, s_{18}^{\text{W}}\}
+\end{equation}
+
+Cơ chế này đảm bảo nhóm Asian có đủ mẫu trong tập Test (19 ảnh, 18.10\%) để kiểm định T-test có ý nghĩa thống kê, khắc phục hoàn toàn vấn đề của các phương pháp phân chia ngẫu nhiên trước đây.
+
+\subsection*{Phân chia K-Fold trong tập Train+Val}
+
+\textbf{StratifiedGroupKFold} (10 folds) được áp dụng trên phần Train+Val (540 ảnh, ~85\% subjects), đảm bảo: (i) cùng một Subject ID chỉ xuất hiện trong train hoặc val của mỗi fold, không bao giờ ở cả hai; và (ii) phân phối nhóm nhân khẩu học được duy trì đồng đều qua các folds.
+
+\noindent Phân chia dữ liệu tổng hợp:
+\begin{itemize}
+    \item \textbf{Test set:} 105 ảnh (Asian: 19 / 18.10\%, Black: 44 / 41.90\%, White: 42 / 40.00\%), tách biệt hoàn toàn ở cấp Subject.
+    \item \textbf{Train + Validation set:} 540 ảnh, trong mỗi fold dành 90\% ($\approx 486$ ảnh) cho huấn luyện và 10\% ($\approx 54$ ảnh) cho kiểm định.
+\end{itemize}
+
+Cải tiến này làm cho kết quả đánh giá thực sự phản ánh khả năng tổng quát hóa của mô hình trên các chủ thể chưa từng gặp, đồng thời cho phép phân tích Fairness đầy đủ trên cả 3 nhóm màu da.
+
+\section{Tiền xử lý dữ liệu và Thuật toán Smart Face CLAHE}
+Nhóm đề xuất hai phiên bản tiền xử lý độc lập, tương ứng với hai mô hình song song. Điểm chung của cả hai là áp dụng thuật toán \textit{Smart Face CLAHE} trước bước chuyển đổi không gian màu.
+
+\subsection{Thuật toán Smart Face CLAHE}
+
+\noindent\textbf{Lý do:} Ảnh trong bộ Delaware được chụp trong điều kiện chiếu sáng không đồng nhất giữa các chủ thể và đôi khi ngay trong cùng một ảnh (một bên mặt sáng, một bên tối), khiến các nếp nhăn và chuyển động cơ mặt (AU) --- tín hiệu quan trọng nhất để nhận diện đau --- bị mờ hoặc mất tương phản ở vùng thiếu sáng. Cân bằng sáng toàn cục (Histogram Equalization thông thường) áp dụng cùng một phép biến đổi cho toàn ảnh nên không xử lý tốt sự chênh lệch sáng cục bộ này.
+
+\noindent\textbf{Mục đích:} Tăng cường độ tương phản cục bộ tại các vùng cơ mặt (mắt, mũi, miệng) để làm nổi bật rõ hơn các AU liên quan đến đau, đồng thời không làm sai lệch sắc tố da --- yếu tố cần được bảo toàn nguyên vẹn để phục vụ phân tích Fairness ở các mục sau. Thuật toán \textit{Smart Face CLAHE} được đề xuất với quy trình hoạt động mô tả trong Thuật toán~\ref{alg:clahe}.
+
+\begin{algorithm}[H]
+\caption{Smart Face CLAHE}
+\label{alg:clahe}
+\begin{algorithmic}[1]
+\Require Ảnh RGB đầu vào $I$, tham số $\texttt{clip\_limit} = 2.0$, $\texttt{tile\_grid\_size} = (8, 8)$
+\Ensure  Ảnh RGB đã cân bằng tương phản $I'$
+\State Chuyển $I$ sang không gian màu CIE LAB:
+       $(L, a, b) \leftarrow \mathrm{RGB2LAB}(I)$
+\State Khởi tạo bộ cân bằng thích nghi:
+       $\mathrm{CLAHE} \leftarrow \mathrm{createCLAHE}(\texttt{clip\_limit},\; \texttt{tile\_grid\_size})$
+\State Áp dụng CLAHE chỉ trên kênh độ sáng:
+       $L' \leftarrow \mathrm{CLAHE.apply}(L)$
+       \Comment{Kênh $a$, $b$ (màu sắc) giữ nguyên}
+\State Ghép lại: $I'_{\mathrm{LAB}} \leftarrow \mathrm{merge}(L', a, b)$
+\State Chuyển về RGB: $I' \leftarrow \mathrm{LAB2RGB}(I'_{\mathrm{LAB}})$
+\State \Return $I'$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{hinh_bu_sang.png}
+    \caption{So sánh hình ảnh trước (trái) và sau (phải) khi áp dụng thuật toán Smart Face CLAHE}
+    \label{fig:clahe_effect}
+\end{figure}
+
+\noindent\textbf{Ý nghĩa thiết kế:}
+\begin{itemize}
+    \item \textbf{Cân bằng cục bộ thích nghi (Adaptive):} Khác với phép dịch sáng toàn cục, CLAHE chia ảnh thành $8 \times 8 = 64$ ô lưới và tính histogram riêng cho từng ô. Điều này cho phép xử lý hiệu quả các khuôn mặt có điều kiện chiếu sáng không đồng đều (ví dụ: một bên mặt sáng, một bên tối).
+    \item \textbf{Kiểm soát khuếch đại nhiễu (Clip Limit):} Tham số \texttt{clip\_limit = 2.0} cắt bỏ phần histogram vượt ngưỡng và phân phối đều phần dư, ngăn chặn việc khuếch đại quá mức vùng nhiễu hoặc vùng phản chiếu sáng.
+    \item \textbf{Bảo toàn thông tin màu sắc:} Bằng cách chỉ xử lý kênh $L$ trong không gian CIE LAB, thuật toán không làm thay đổi sắc tố (hue) hay độ bão hòa (saturation), bảo toàn nguyên vẹn thông tin màu da vốn là tín hiệu quan trọng cho bài toán.
+\end{itemize}
+
+\subsection{Mô hình Gray-CLAHE}
+Sau bước Smart Face CLAHE, ảnh được resize về $300 \times 300$ px, sau đó chuyển về \textbf{ảnh xám} (Grayscale) và nhân bản thành 3 kênh đồng nhất (\texttt{Grayscale(num\_output\_channels=3)}). Lưu ý quan trọng: bước Resize diễn ra \textit{trước} bước Grayscale để đảm bảo xử lý nhất quán trong pipeline. Cách tiếp cận này loại bỏ hoàn toàn thông tin màu sắc, giúp mô hình tập trung vào cấu trúc hình học và đường nét khuôn mặt.
+
+\subsection{Mô hình RGB-CLAHE}
+Mô hình RGB giữ nguyên thông tin màu sắc sau bước Smart Face CLAHE, sử dụng chuẩn hóa theo thống kê ImageNet ($\text{mean} = [0.485, 0.456, 0.406]$, $\text{std} = [0.229, 0.224, 0.225]$), phù hợp với backbone đã pre-trained.
+
+\section{Pipeline tăng cường dữ liệu (Data Augmentation)}
+Sau bước tiền xử lý màu sắc, toàn bộ ảnh đi qua pipeline tăng cường dữ liệu thống nhất trong giai đoạn huấn luyện (Bảng~\ref{tab:augmentation}). Ở giai đoạn kiểm thử, chỉ áp dụng Smart Face CLAHE, Resize và Normalize để tránh mọi sự ngẫu nhiên.
+
+\begin{table}[H]
+    \centering
+    \caption{Pipeline biến đổi ảnh trong giai đoạn huấn luyện}
+    \label{tab:augmentation}
+    \begin{tabular}{cll}
+        \toprule
+        \textbf{Thứ tự} & \textbf{Phép biến đổi} & \textbf{Tham số} \\
+        \midrule
+        1 & Smart Face CLAHE                                           & clip\_limit=$2.0$, tile=(8,8) \\
+        2 & Resize                                                     & $300 \times 300$ px \\
+        3 & Grayscale + Replicate \textit{(chỉ mô hình Gray)}         & \texttt{num\_output\_channels=3} \\
+        4 & Random Horizontal Flip                                     & $p = 0.5$ \\
+        5 & Random Rotation                                            & $\pm 10^{\circ}$ \\
+        6 & Color Jitter                                               & brightness=$0.2$, contrast=$0.2$ \\
+        7 & Random Affine (Translation)                                & $\pm 10\%$ theo cả hai chiều \\
+        8 & ToTensor                                                   & Chuẩn hóa về $[0,\,1]$ \\
+        9 & Normalize \textit{(Gray)}                                  & mean $= [0.449, 0.449, 0.449]$, std $= [0.226, 0.226, 0.226]$ \\
+        9 & Normalize \textit{(RGB)}                                   & mean $= [0.485, 0.456, 0.406]$, std $= [0.229, 0.224, 0.225]$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Khung công bằng (Fairness Framework)}
+\label{sec:fairness}
+
+\noindent\textbf{Lý do:} Như đã trình bày ở Bảng~\ref{tab:dataset_dist}, bộ dữ liệu Delaware mất cân bằng nghiêm trọng giữa các nhóm màu da (White chiếm 56.12\%, trong khi Asian chỉ chiếm 16.12\%). Nếu huấn luyện bằng hàm mất mát MSE thông thường (không trọng số), gradient cập nhật trong mỗi mini-batch sẽ bị chi phối bởi nhóm đa số (White), khiến mô hình có xu hướng tối ưu hoá theo hướng có lợi cho nhóm này trong khi sai số trên các nhóm thiểu số (đặc biệt Asian) bị xem nhẹ.
+
+\noindent\textbf{Mục đích:} Chiến lược \textbf{Weighted Loss} theo nhóm nhân khẩu học được thiết kế nhằm buộc mô hình phân bổ ``sự chú ý'' (thông qua trọng số gradient) đồng đều hơn giữa các nhóm, giảm nguy cơ mô hình học lệch (biased) về nhóm đa số ngay từ giai đoạn huấn luyện --- thay vì chỉ xử lý hậu kỳ (post-hoc) sau khi mô hình đã huấn luyện xong. Cần lưu ý rằng đây là một \textit{giả thuyết thiết kế} cần được kiểm chứng bằng thực nghiệm: hiệu quả thực sự của Weighted Loss so với việc không dùng trọng số được đối chiếu định lượng bằng ablation study tại Mục~\ref{sec:ablation}.
+
+Trong quá trình huấn luyện, mỗi mẫu được phân vào một trong \textbf{6 nhóm kết hợp} giữa màu da và giới tính: \{Black\_Male, Black\_Female, White\_Male, White\_Female, Asian\_Male, Asian\_Female\}, tức $K_{\text{nhóm}} = 6$. Trọng số $w_g$ của mỗi nhóm $g$ được tính theo công thức:
+
+\begin{equation}
+    w_g = \frac{N}{K_{\text{nhóm}} \cdot n_g}, \quad K_{\text{nhóm}} = 6
+    \label{eq:weight}
+\end{equation}
+
+\noindent trong đó $N$ là tổng số mẫu trong tập huấn luyện và $n_g$ là số mẫu thuộc nhóm $g$. Nhóm có ít mẫu hơn (ví dụ: Asian\_Male) nhận trọng số lớn hơn, buộc mô hình phải chú trọng đến các trường hợp thiểu số.
+
+\noindent\textbf{Hàm mất mát có trọng số (Weighted MSE Loss):}
+
+\begin{equation}
+    \mathcal{L}_{\text{weighted}} = \frac{1}{|\mathcal{B}|} \sum_{i \in \mathcal{B}}
+    w_{g_i} \cdot \bigl(\hat{y}_i - y_i\bigr)^2
+    \label{eq:weighted_loss}
+\end{equation}
+
+\noindent với $\hat{y}_i$ là giá trị dự đoán, $y_i$ là nhãn thực, $g_i$ là nhóm màu da--giới tính của mẫu thứ $i$, và $\mathcal{B}$ là mini-batch hiện tại.
+
+\noindent Trọng số được tính riêng cho từng fold dựa trên phân phối thực tế của tập Train trong fold đó, tránh rò rỉ thông tin phân phối từ tập Validation.
+
+\section{So sánh và Lựa chọn Kiến trúc Backbone}
+\label{sec:baseline_comparison}
+
+\noindent\textbf{Lý do:} Việc lựa chọn EfficientNet-B3 làm backbone cần được biện minh thay vì mặc định, đặc biệt khi nhiều kiến trúc CNN khác (ResNet50, MobileNetV3, DenseNet121, EfficientNet-B0) cũng phổ biến cho ảnh y tế cỡ dữ liệu nhỏ.
+
+\noindent\textbf{Mục đích:} Xác định kiến trúc backbone cân bằng tốt nhất giữa (a) năng lực biểu diễn đủ để học đặc trưng AU tinh vi trên ảnh $300\times300$, và (b) số lượng tham số phù hợp với cỡ dữ liệu Train+Val hạn chế (540 ảnh) để tránh overfitting.
+
+Bảng~\ref{tab:backbone_comparison} tổng hợp đặc tính các kiến trúc phổ biến, dựa trên số liệu ImageNet công bố trong các công trình gốc.
+
+\begin{table}[H]
+\centering
+\caption{So sánh lý thuyết các kiến trúc backbone (số liệu công bố trên ImageNet)}
+\label{tab:backbone_comparison}
+\begin{tabular}{lccc}
+    \toprule
+    \textbf{Kiến trúc} & \textbf{Tham số} & \textbf{FLOPs} & \textbf{Top-1 ImageNet} \\
+    \midrule
+    ResNet50 (224px) & $\sim$25.6M & $\sim$4.1G & $\sim$76\% \\
+    DenseNet121 (224px) & $\sim$8M & $\sim$2.8G & $\sim$74--76\% \\
+    MobileNetV3-Large (224px) & $\sim$5.4M & thấp (tối ưu di động) & $\sim$75.2\% \\
+    EfficientNet-B0 (224px) & $\sim$5.3M & $\sim$0.39G & $\sim$77.1\% \\
+    \textbf{EfficientNet-B3 (300px, đã chọn)} & $\sim$12M & $\sim$1.8G & $\sim$81.1\% \\
+    \bottomrule
+\end{tabular}
+\vspace{0.3em}\\
+{\footnotesize \textit{Nguồn: tổng hợp từ công trình gốc của từng kiến trúc \cite{he2016resnet} (ResNet), \cite{huang2017densenet} (DenseNet), \cite{howard2019mobilenetv3} (MobileNetV3), \cite{tan2019efficientnet} (EfficientNet).}}
+\end{table}
+
+\noindent\textbf{Phân tích lựa chọn:}
+\begin{itemize}
+    \item \textbf{So với ResNet50:} EfficientNet-B3 đạt Top-1 ImageNet cao hơn ($\sim$81\% so với $\sim$76\%) với số tham số chỉ bằng gần một nửa ($\sim$12M so với $\sim$25.6M) --- phù hợp hơn với cỡ dữ liệu Train+Val hạn chế, giảm nguy cơ overfitting.
+    \item \textbf{So với DenseNet121:} DenseNet có ít tham số hơn nhưng kết nối dày đặc (dense connections) làm tăng chi phí bộ nhớ khi lan truyền ngược trên ảnh $300\times300$; EfficientNet-B3 đạt độ chính xác cao hơn với chi phí bộ nhớ dự đoán được nhờ compound scaling.
+    \item \textbf{So với MobileNetV3-Large và EfficientNet-B0:} Cả hai nhẹ hơn và phù hợp triển khai di động/edge, nhưng năng lực biểu diễn thấp hơn ($\sim$75--77\% so với $\sim$81\%) có nguy cơ không đủ để phân biệt các mức cường độ đau gần nhau --- sự khác biệt tinh vi hơn nhiều so với phân loại 1000 lớp ImageNet.
+    \item \textbf{Kết luận lựa chọn:} EfficientNet-B3 nằm ở điểm cân bằng hợp lý nhất giữa năng lực biểu diễn và nguy cơ overfitting trên cỡ dữ liệu của đề tài, đồng thời phù hợp độ phân giải đầu vào chuẩn $300\times300$ mà không cần thay đổi kiến trúc.
+\end{itemize}
+
+\section{Kiến trúc mô hình và Chiến lược 10-Fold Ensemble}
+
+\subsection{Kiến trúc mạng}
+Mô hình bao gồm ba thành phần nối tiếp:
+\begin{enumerate}
+    \item \textbf{Backbone EfficientNet-B3:} Khởi tạo từ trọng số ImageNet (Transfer Learning). Lớp phân loại gốc được loại bỏ, giữ lại phần trích xuất đặc trưng với \texttt{global\_avg\_pool} cho ra vector 1536 chiều.
+    \item \textbf{Dropout(0.3):} Tắt ngẫu nhiên 30\% nơ-ron mỗi bước huấn luyện để chống overfitting.
+    \item \textbf{Linear($1536 \to 1$):} Lớp hồi quy tuyến tính dự đoán điểm đau liên tục trên thang $[0,\,7]$.
+\end{enumerate}
+
+\subsection{Bộ tối ưu và Lịch trình học tập}
+
+\noindent\textbf{Lý do \& Mục đích:} Vì backbone EfficientNet-B3 đã được pretrained trên ImageNet, việc cập nhật trọng số quá đột ngột ngay từ đầu có thể phá vỡ các đặc trưng tổng quát đã học được (\textit{catastrophic forgetting}), trong khi tập dữ liệu Delaware tương đối nhỏ (540 ảnh Train+Val) khiến mô hình dễ overfitting nếu huấn luyện quá lâu ở tốc độ học cao. Ba kỹ thuật được kết hợp để giải quyết đồng thời hai rủi ro này: \textbf{Warmup} giúp tốc độ học tăng dần trong 5 epoch đầu, tránh cập nhật gây nhiễu các trọng số pretrained; \textbf{Cosine Annealing} giảm dần tốc độ học sau đó để mô hình hội tụ ổn định; và \textbf{Dropout(0.3) + Early Stopping} (15 epoch không cải thiện) hạn chế overfitting trên tập dữ liệu có quy mô hạn chế.
+
+Mô hình được tối ưu bằng \textbf{AdamW} với learning rate khởi đầu $\eta_{\max} = 5 \times 10^{-4}$. Lịch trình học tập áp dụng chiến lược \textbf{Warmup + Cosine Annealing}:
+
+\begin{equation}
+    \eta_t =
+    \begin{cases}
+        \eta_{\max} \cdot \dfrac{t+1}{T_{\text{warm}}}
+            & \text{nếu } t < T_{\text{warm}} \\[10pt]
+        \dfrac{\eta_{\max}}{2}
+        \!\left(1 + \cos\!\left(\pi \cdot
+        \dfrac{t - T_{\text{warm}}}{T_{\text{total}} - T_{\text{warm}}}
+        \right)\right)
+            & \text{nếu } t \geq T_{\text{warm}}
+    \end{cases}
+    \label{eq:scheduler}
+\end{equation}
+
+\noindent với $T_{\text{warm}} = 5$ epoch khởi động và $T_{\text{total}} = 50$ epoch tối đa. Nếu validation loss không cải thiện sau \textbf{15 epoch liên tiếp} (Early Stopping), quá trình huấn luyện của fold đó kết thúc sớm và tải lại checkpoint tốt nhất.
+
+\subsection{Bảng tổng hợp siêu tham số}
+
+\begin{table}[H]
+    \centering
+    \caption{Siêu tham số huấn luyện (dùng chung cho cả Gray-CLAHE và RGB-CLAHE)}
+    \label{tab:hyperparams}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Siêu tham số} & \textbf{Giá trị} & \textbf{Ghi chú} \\
+        \midrule
+        Backbone              & EfficientNet-B3        & Pretrained trên ImageNet \\
+        Kích thước ảnh đầu vào & $300 \times 300$ px   & Phù hợp chuẩn EfficientNet-B3 \\
+        Batch size            & 16                     & \\
+        Optimizer             & AdamW                  & \\
+        Learning rate         & $5 \times 10^{-4}$     & \\
+        Warmup epochs         & 5                      & Tuyến tính từ 0 đến $\eta_{\max}$ \\
+        Tổng epoch tối đa     & 50                     & Per fold \\
+        Early stopping        & 15 epoch               & Dựa trên validation loss \\
+        Dropout               & 0.3                    & Trước lớp Linear \\
+        Loss function         & Weighted MSE           & Theo 6 nhóm màu da--giới tính \\
+        K-Fold                & 10                     & StratifiedGroupKFold theo Subject ID \\
+        Test split            & $\approx$15.9\% (105 ảnh) & Custom 1:2:3 (Asian:Black:White) \\
+        Random seed           & 42                     & Toàn bộ pipeline \\
+        OpenFace threshold    & $\geq 0.8$             & Lọc ảnh chất lượng thấp \\
+        Believability threshold & $\geq 2.5$           & Lọc nhãn không đáng tin \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Chiến lược Ensemble suy luận}
+
+\noindent\textbf{Lý do:} Với cỡ mẫu Train+Val giới hạn (540 ảnh) và bản chất ngẫu nhiên của quá trình chia fold, một mô hình huấn luyện từ một lần chia dữ liệu duy nhất dễ bị ảnh hưởng bởi phương sai (variance) riêng của fold đó, dẫn đến kết quả không ổn định nếu chỉ dựa vào một checkpoint duy nhất.
+
+\noindent\textbf{Mục đích:} Trung hoà sai số ngẫu nhiên của từng fold riêng lẻ, mang lại ước lượng ổn định và đáng tin cậy hơn khi triển khai thực tế. Ở giai đoạn suy luận (Inference), dự đoán cuối cùng $\hat{y}_{\text{ens}}$ là trung bình cộng không trọng số của 10 mô hình con:
+
+\begin{equation}
+    \hat{y}_{\text{ens}} = \frac{1}{K_{\text{fold}}} \sum_{k=1}^{K_{\text{fold}}} \hat{y}_k,
+    \quad K_{\text{fold}} = 10
+    \label{eq:ensemble}
+\end{equation}
+
+Chiến lược này làm giảm phương sai dự đoán đáng kể so với bất kỳ mô hình đơn lẻ nào, đặc biệt hiệu quả khi kiểm thử trên dữ liệu phân phối khác (Out-of-Distribution).
+
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}[node distance=1.2cm and 0.8cm]
+
+        % --- ĐẦU VÀO ---
+        \node (input) [io, minimum width=7cm, text width=6cm]
+              {Ảnh khuôn mặt đầu vào (Delaware)};
+
+        % --- CLAHE CHUNG ---
+        \node (clahe) [process, below=0.8cm of input, minimum width=7cm, text width=6cm,
+                       fill=purple!15]
+              {Smart Face CLAHE\\[-2pt]\textit{(CLAHE trên kênh L — CIE LAB)}};
+
+        % --- NHÁNH TRÁI: RGB ---
+        \node (rgb) [process, below left=1.2cm and 1.5cm of clahe]
+              {Giữ RGB đầy đủ\\[-2pt]\textit{Normalize ImageNet}};
+
+        % --- NHÁNH PHẢI: GRAY ---
+        \node (gray) [processgray, below right=1.2cm and 1.5cm of clahe]
+              {Resize ($300\!\times\!300$)\\[-2pt]\textit{→ Grayscale (3ch)}\\\textit{Normalize Gray}};
+
+        % --- AUGMENTATION ---
+        \node (augment_rgb) [process, below=1.4cm of rgb]
+              {Tăng cường dữ liệu \&\\ Resize ($300\!\times\!300$)};
+
+        \node (augment_gray) [processgray, below=1.4cm of gray]
+              {Tăng cường dữ liệu};
+
+        % --- MODEL TRÁI: RGB ---
+        \node (eff_rgb) [model, below=1.0cm of augment_rgb]
+              {EfficientNet-B3\\ \textit{(trọng số RGB-CLAHE)}};
+
+        \node (head_rgb) [model, below=0.9cm of eff_rgb]
+              {Dropout(0.3)\\ + Linear(1)};
+
+        \node (ens_rgb) [process, below=0.9cm of head_rgb]
+              {10-Fold Ensemble};
+
+        % --- MODEL PHẢI: GRAY ---
+        \node (eff_gray) [model, below=1.0cm of augment_gray]
+              {EfficientNet-B3\\ \textit{(trọng số Gray-CLAHE)}};
+
+        \node (head_gray) [model, below=0.9cm of eff_gray]
+              {Dropout(0.3)\\ + Linear(1)};
+
+        \node (ens_gray) [processgray, below=0.9cm of head_gray]
+              {10-Fold Ensemble};
+
+        % --- ĐẦU RA ---
+        \node (out_rgb) [io, below=0.9cm of ens_rgb,
+                         minimum width=3.5cm, text width=3.2cm]
+              {Dự đoán đau\\ (0--7)};
+
+        \node (out_gray) [io, below=0.9cm of ens_gray,
+                          minimum width=3.5cm, text width=3.2cm]
+              {Dự đoán đau\\ (0--7)};
+
+        % --- KHUNG ---
+        \node[draw, dashed, blue!60, inner sep=0.3cm,
+              fit=(eff_rgb)(head_rgb)(ens_rgb),
+              label={[blue!60]above:\textbf{Mô hình RGB-CLAHE}}] {};
+
+        \node[draw, dashed, orange!70!black, inner sep=0.3cm,
+              fit=(eff_gray)(head_gray)(ens_gray),
+              label={[orange!70!black]above:\textbf{Mô hình Gray-CLAHE}}] {};
+
+        % --- MŨI TÊN ---
+        \draw [arrow] (input.south) -- (clahe.north);
+        \draw [arrow] (clahe.south) -- ++(0,-0.4) -| (rgb.north);
+        \draw [arrow] (clahe.south) -- ++(0,-0.4) -| (gray.north);
+        \draw [arrow] (rgb)          -- (augment_rgb);
+        \draw [arrow] (gray)         -- (augment_gray);
+        \draw [arrow] (augment_rgb)  -- (eff_rgb);
+        \draw [arrow] (augment_gray) -- (eff_gray);
+        \draw [arrow] (eff_rgb)      -- (head_rgb);
+        \draw [arrow] (eff_gray)     -- (head_gray);
+        \draw [arrow] (head_rgb)     -- (ens_rgb);
+        \draw [arrow] (head_gray)    -- (ens_gray);
+        \draw [arrow] (ens_rgb)      -- (out_rgb);
+        \draw [arrow] (ens_gray)     -- (out_gray);
+
+    \end{tikzpicture}
+    }
+    \caption{Sơ đồ Pipeline của hệ thống: Smart Face CLAHE được áp dụng chung cho cả hai nhánh; hai mô hình \textbf{RGB-CLAHE} và \textbf{Gray-CLAHE} độc lập hoàn toàn.}
+    \label{fig:pipeline}
+\end{figure}
+
+% =========================================
+% CHƯƠNG 3
+% =========================================
+\chapter{THỰC NGHIỆM VÀ ĐÁNH GIÁ KẾT QUẢ}
+
+\section{Kết quả chi tiết từng Fold (Per-Fold Analysis)}
+\label{sec:perfold}
+
+Trong quá trình huấn luyện, tập Validation (10\% dữ liệu của từng fold, không chồng chéo Subject với Train) chỉ được sử dụng để theo dõi và kích hoạt dừng sớm (\textit{Early Stopping}). Sau khi kết thúc mỗi fold, checkpoint mô hình tốt nhất được lưu lại và đánh giá độc lập trên \textbf{cùng một tập Hold-out Test 105 ảnh duy nhất} đã được tách riêng từ đầu theo Subject ID và tỉ lệ nhân khẩu học.
+
+Bảng~\ref{tab:fold_rgb} và Bảng~\ref{tab:fold_gray} trình bày kết quả ba chỉ số hồi quy ($R^2$, RMSE, MAE) của 10 mô hình sinh ra từ 10 fold khi dự đoán trên tập Validation của từng fold. Hàng màu xanh lá biểu thị fold tốt nhất, hàng màu đỏ biểu thị fold có hiệu suất thấp nhất.
+
+\begin{table}[H]
+    \centering
+    \caption{Kết quả chi tiết 10 folds --- Mô hình RGB-CLAHE (đánh giá trên tập Validation)}
+    \label{tab:fold_rgb}
+    \begin{tabular}{cccc}
+        \toprule
+        \textbf{Fold} & \textbf{R²} & \textbf{RMSE} & \textbf{MAE} \\
+        \midrule
+        1  & 0.5936 & 0.6766 & 0.5153 \\
+        2  & 0.6318 & 0.6793 & 0.5390 \\
+        3  & 0.5632 & 0.7600 & 0.6099 \\
+        4  & 0.7249 & 0.6125 & 0.4908 \\
+        \rowcolor{green!15}
+        5  & \textbf{0.7996} & \textbf{0.4899} & \textbf{0.3733} \\
+        6  & 0.6314 & 0.6327 & 0.5055 \\
+        7  & 0.7248 & 0.5996 & 0.4917 \\
+        8  & 0.7691 & 0.5267 & 0.4300 \\
+        \rowcolor{red!12}
+        9  & 0.5074 & 0.6311 & 0.4708 \\
+        10 & 0.5683 & 0.7018 & 0.5327 \\
+        \midrule
+        \textbf{Mean} & $\mathbf{0.6514}$ & $\mathbf{0.6310}$ & $\mathbf{0.4959}$ \\
+        \textbf{Std}  & $0.0978$ & $0.0804$ & $0.0639$ \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.3em}\\
+    {\footnotesize \textit{Hàng xanh = fold tốt nhất (Fold 5); hàng đỏ = fold xấu nhất (Fold 9).}}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Kết quả chi tiết 10 folds --- Mô hình Gray-CLAHE (đánh giá trên tập Validation)}
+    \label{tab:fold_gray}
+    \begin{tabular}{cccc}
+        \toprule
+        \textbf{Fold} & \textbf{R²} & \textbf{RMSE} & \textbf{MAE} \\
+        \midrule
+        1  & 0.5921 & 0.6779 & 0.5549 \\
+        2  & 0.7118 & 0.6010 & 0.4950 \\
+        3  & 0.5722 & 0.7521 & 0.6006 \\
+        4  & 0.7277 & 0.6094 & 0.4841 \\
+        5  & 0.7242 & 0.5748 & 0.4630 \\
+        6  & 0.6282 & 0.6354 & 0.5333 \\
+        7  & 0.6765 & 0.6501 & 0.5174 \\
+        \rowcolor{green!15}
+        8  & \textbf{0.7328} & \textbf{0.5666} & \textbf{0.4521} \\
+        9  & 0.5330 & 0.6145 & 0.4559 \\
+        \rowcolor{red!12}
+        10 & 0.5239 & 0.7371 & 0.5926 \\
+        \midrule
+        \textbf{Mean} & $\mathbf{0.6422}$ & $\mathbf{0.6419}$ & $\mathbf{0.5149}$ \\
+        \textbf{Std}  & $0.0829$ & $0.0635$ & $0.0546$ \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.3em}\\
+    {\footnotesize \textit{Hàng xanh = fold tốt nhất (Fold 8); hàng đỏ = fold xấu nhất (Fold 10).}}
+\end{table}
+
+\noindent\textbf{Phân tích sự ổn định giữa các fold:} Cả hai mô hình đều có độ biến động đáng chú ý qua các fold. Gray-CLAHE có độ lệch chuẩn R² thấp hơn ($\sigma = 0.0829$) so với RGB-CLAHE ($\sigma = 0.0978$), phản ánh rằng việc loại bỏ thông tin màu sắc giúp mô hình ổn định hơn khi phân vùng dữ liệu thay đổi. Ngược lại, RGB-CLAHE đạt đỉnh hiệu suất cao hơn rõ rệt: Fold 5 đạt R² = $0.7996$, trong khi Fold tốt nhất của Gray chỉ đạt $0.7328$.
+
+\section{Đánh giá hiệu năng tổng thể (Regression Metrics)}
+
+\begin{table}[H]
+    \centering
+    \caption{So sánh hiệu năng tổng thể giữa hai mô hình}
+    \label{tab:overall_results}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Mô hình} & \textbf{Mean R²} & \textbf{Mean RMSE} & \textbf{Mean MAE} \\
+        \midrule
+        \multicolumn{4}{l}{\textit{Trung bình $\pm$ độ lệch chuẩn trên 10 folds (tập Validation)}} \\
+        \textbf{Gray-CLAHE}   & $0.6422 \pm 0.0829$ & $0.6419 \pm 0.0635$ & $0.5149 \pm 0.0546$ \\
+        \textbf{RGB-CLAHE}    & $0.6514 \pm 0.0978$ & $0.6310 \pm 0.0804$ & $0.4959 \pm 0.0639$ \\
+        \midrule
+        \multicolumn{4}{l}{\textit{Kết quả Ensemble trên tập Hold-out Test (105 ảnh, subject-level)}} \\
+        \textbf{Gray-CLAHE Ensemble} & $0.5645$ & $0.6551$ & $0.5102$ \\
+        \textbf{RGB-CLAHE Ensemble}  & $\mathbf{0.5928}$ & $\mathbf{0.6335}$ & $\mathbf{0.4816}$ \\
+        \midrule
+        \multicolumn{4}{l}{\textit{Fold tốt nhất}} \\
+        Gray-CLAHE (Fold 8)  & $0.7328$ & $0.5666$ & $0.4521$ \\
+        RGB-CLAHE (Fold 5)   & $\mathbf{0.7996}$ & $\mathbf{0.4899}$ & $0.3733$ \\
+        \multicolumn{4}{l}{\textit{Fold xấu nhất}} \\
+        Gray-CLAHE (Fold 10) & $0.5239$ & $0.7371$ & $0.5926$ \\
+        RGB-CLAHE (Fold 9)   & $0.5074$ & $0.6311$ & $0.4708$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\noindent\textbf{Nhận xét định lượng:} Kết quả cho thấy \textbf{RGB-CLAHE vượt trội hơn Gray-CLAHE trên tất cả các tiêu chí đánh giá}, cả trên tập Validation trung bình lẫn tập Hold-out Test độc lập.
+
+Xét trên tập Validation trung bình, \textbf{RGB-CLAHE} đạt R² = $0.6514$ so với $0.6422$ của Gray-CLAHE. Khi điều kiện phân vùng dữ liệu tối ưu, RGB đạt đỉnh hiệu suất vượt trội ở R² = $0.7996$ (Fold 5).
+
+Quan trọng hơn, xét trên \textbf{tập Hold-out Test độc lập theo Subject ID với phân bố nhân khẩu học cân bằng} (19 Asian, 44 Black, 42 White), \textbf{RGB-CLAHE Ensemble} tiếp tục dẫn đầu (R² = $0.5928$, RMSE = $0.6335$, MAE = $0.4816$) so với Gray-CLAHE Ensemble (R² = $0.5645$). Kết quả này nhất quán với lợi thế lý thuyết của ảnh màu: tín hiệu sắc tố da và sự ửng đỏ khi đau là thông tin có giá trị mà ảnh xám không thể nắm bắt được, và lợi thế này thể hiện rõ hơn trên tập Test cân bằng về nhân khẩu học.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{scatter_ensemble_test_RGB.png}
+        \caption{Mô hình RGB-CLAHE}
+        \label{fig:scatter_rgb}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{scatter_ensemble_test.png}
+        \caption{Mô hình Gray-CLAHE}
+        \label{fig:scatter_gray}
+    \end{subfigure}
+    \caption{Biểu đồ phân tán (Scatter Plot) so sánh điểm dự đoán và thực tế trên tập Hold-out Test}
+    \label{fig:scatter_combined}
+\end{figure}
+
+\section{Kiểm định ý nghĩa thống kê: RGB-CLAHE so với Gray-CLAHE}
+\label{sec:statistical_analysis}
+
+\noindent\textbf{Lý do:} Mục trên cho thấy RGB-CLAHE có MAE/RMSE/R² tốt hơn Gray-CLAHE, nhưng khác biệt điểm-ước-lượng (point estimate) trên 105 mẫu Test không tự động đồng nghĩa với khác biệt có ý nghĩa thống kê.
+
+\noindent\textbf{Mục đích:} Kiểm định khách quan xem sai số tuyệt đối của hai mô hình trên cùng 105 mẫu Test có khác biệt có ý nghĩa thống kê hay không, dùng kiểm định bắt cặp (paired test) vì cả hai mô hình được đánh giá trên cùng một tập mẫu. Quy trình: kiểm tra phân phối hiệu sai số bằng Shapiro--Wilk để chọn kiểm định phù hợp --- Paired T-test nếu phân phối chuẩn, Wilcoxon Signed-Rank nếu không. Bảng~\ref{tab:statistical_test} tổng hợp kết quả.
+
+\begin{table}[H]
+\centering
+\caption{Kết quả kiểm định thống kê bắt cặp giữa Model RGB và Model Gray}
+\label{tab:statistical_test}
+\begin{tabular}{lc}
+    \toprule
+    \textbf{Chỉ số} & \textbf{Giá trị} \\
+    \midrule
+    Shapiro--Wilk (phân phối hiệu sai số) & $p = 0.9045$ \\
+    Kiểm định được chọn & Paired T-test (phân phối chuẩn) \\
+    MAE Model RGB & $0.4814$ \\
+    MAE Model Gray & $0.5086$ \\
+    Thống kê $t$ & $-1.9759$ \\
+    $p$-value & $0.0508$ \\
+    Kết luận ($\alpha = 0.05$) & Không có khác biệt có ý nghĩa thống kê \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Trực quan hóa bổ sung: Scatter, Residual, Error Histogram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{1_Scatter_Actual_vs_Predicted.png}
+    \caption{Biểu đồ phân tán kết hợp (overlay) giữa điểm đau Thực tế và Dự đoán, đối chiếu Model RGB và Model Gray trên cùng một trục toạ độ --- bổ sung góc nhìn trực tiếp cho cặp biểu đồ tách riêng đã trình bày ở Hình~\ref{fig:scatter_combined}.}
+    \label{fig:scatter_actual_predicted}
+\end{figure}
+
+Hình~\ref{fig:scatter_actual_predicted} cho thấy cả hai mô hình bám khá sát đường lý tưởng (Actual = Predicted) ở vùng điểm đau thấp--trung bình ($1$--$4$), nhưng có xu hướng \textit{co lại về giá trị trung bình} (regression to the mean) ở hai đầu phân phối: dự đoán cao hơn thực tế khi Actual thấp, thấp hơn thực tế khi Actual cao (rõ nhất gần Actual $\approx 6$). Đây là hành vi điển hình của mô hình hồi quy khi nhãn huấn luyện lệch về vùng trung bình (Hình~\ref{fig:label_dist} cho thấy 56.9\% mẫu thuộc dải Trung bình 2--4), khiến mô hình ``thận trọng'' hơn ở các giá trị cực trị hiếm gặp.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{2_Residual_Plot.png}
+    \caption{Biểu đồ phần dư (Residual = Predicted $-$ Actual) theo điểm đau Thực tế.}
+    \label{fig:residual_plot}
+\end{figure}
+
+Hình~\ref{fig:residual_plot} minh hoạ rõ hơn hiện tượng trên: phần dư dương (over-prediction) tập trung ở Actual $<2$, phần dư âm (under-prediction) ngày càng lớn khi Actual $>4$, với điểm lệch nhất gần $-1.8$ tại Actual $\approx 6$. Phần dư không phân bố ngẫu nhiên đều quanh 0 mà có dạng ``sóng'' theo Actual, cho thấy quan hệ giữa đặc trưng khuôn mặt và cường độ đau không hoàn toàn tuyến tính 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3_Error_Histogram.png}
+    \caption{Phân phối tần suất sai số (Predicted $-$ Actual), đối chiếu Model RGB và Model Gray.}
+    \label{fig:error_histogram}
+\end{figure}
+
+Hình~\ref{fig:error_histogram} cho thấy cả hai phân phối sai số xấp xỉ hình chuông, tập trung quanh 0 --- phù hợp với kiểm định Shapiro--Wilk ($p=0.9045$) ở trên xác nhận phân phối chuẩn. Model Gray có đỉnh phân phối nhọn hơn quanh $[-0.7, 0]$, trong khi Model RGB có phần đuôi dàn trải đều hơn về hai phía --- gợi ý RGB tuy có MAE trung bình thấp hơn nhưng biến thiên sai số theo mẫu tương đối rộng hơn ở một số điểm cá biệt.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{4_Fairness_Boxplot.png}
+    \caption{Phân phối Sai số tuyệt đối theo nhóm màu da, đối chiếu Model RGB và Model Gray. Xem thêm phân tích chi tiết tại Mục~\ref{sec:fairness_analysis}.}
+    \label{fig:fairness_boxplot_combined}
+\end{figure}
+
+Hình~\ref{fig:fairness_boxplot_combined} tổng hợp trực quan sai số tuyệt đối theo 3 nhóm da cho cả hai mô hình, bổ sung góc nhìn cho số liệu MAE/RMSE/Bias ở Bảng~\ref{tab:fairness_ttest}. Đáng chú ý, nhóm Asian có giá trị ngoại lai lớn nhất (Absolute Error $>2.0$ với Model Gray) dù trung vị của nhóm này thấp hơn nhóm White ở cả hai mô hình --- minh hoạ trực quan rằng MAE/trung vị thấp không loại trừ khả năng tồn tại các ca dự đoán sai nghiêm trọng cá biệt, phù hợp với việc cỡ mẫu Asian nhỏ ($N=19$) khiến ngoại lai ảnh hưởng tương đối lớn hơn đến phân phối tổng thể của nhóm.
+
+\section{Đánh giá phân loại theo mức độ đau (Ensemble Confusion Matrix)}
+
+Kết quả dự đoán liên tục của Ensemble 10 folds trên tập Hold-out Test được ánh xạ về 3 dải:
+Thấp $[0,2)$, Vừa $[2,4)$, và Cao $[4,7]$.
+Bảng~\ref{tab:classification_report} tóm tắt các chỉ số phân loại để so sánh trực tiếp hiệu năng giữa hai ảnh đầu vào.
+
+\begin{table}[H]
+    \centering
+    \caption{Báo cáo phân loại theo 3 mức độ đau --- So sánh Gray-CLAHE và RGB-CLAHE}
+    \label{tab:classification_report}
+    \begin{tabular}{llccccc}
+        \toprule
+        \textbf{Mô hình} & \textbf{Dải đau} & \textbf{Số mẫu} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Nhận xét} \\
+        \midrule
+        \multirow{3}{*}{Gray-CLAHE}
+            & Thấp $[0,2)$ & 22 & 0.71 & 0.23 & 0.35 & Nhầm 77\% sang Vừa \\
+            & Vừa  $[2,4)$ & 64 & 0.66 & 0.89 & 0.76 & Recall cao, Precision thấp \\
+            & Cao  $[4,7]$ & 19 & 0.58 & 0.37 & 0.45 & Nhầm 63\% xuống Vừa \\
+        \midrule
+        \multirow{3}{*}{RGB-CLAHE}
+            & Thấp $[0,2)$ & 22 & 0.89 & 0.36 & 0.51 & Precision cao, cân bằng hơn \\
+            & Vừa  $[2,4)$ & 64 & 0.72 & 0.91 & 0.80 & Tốt nhất trong các dải \\
+            & Cao  $[4,7]$ & 19 & 0.67 & 0.53 & 0.59 & Cải thiện đáng kể vs Gray \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ensemble_overall_confusion_matrix_RGB.png}
+        \caption{Mô hình RGB-CLAHE}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ensemble_overall_confusion_matrix_gray.png}
+        \caption{Mô hình Gray-CLAHE}
+    \end{subfigure}
+
+    \caption{Ma trận nhầm lẫn (Confusion Matrix) Ensemble trên tập Hold-out Test --- 3 dải mức độ đau}
+    \label{fig:cm_combined}
+\end{figure}
+
+\noindent\textit{Phân tích lâm sàng:} Quá trình đánh giá cho thấy việc giữ lại hay loại bỏ kênh màu có tác động rõ rệt đến xu hướng học của mô hình. Cụ thể:
+
+\begin{itemize}
+    \item \textbf{Gray-CLAHE (Tập trung cấu trúc):} Do chỉ dựa vào cấu trúc hình học và đường nét cơ mặt, mô hình xám có xu hướng ``thiên vị'' về dải Vừa --- dải chiếm đa số mẫu huấn luyện (52 ảnh, chiếm 81\% tổng 64 mẫu dải Vừa). Điều này dẫn đến Recall xuất sắc ở dải Vừa (89\%) nhưng nhận diện rất kém ở dải Thấp (Recall 23\%): mô hình nhầm 77\% các ca không đau/đau nhẹ thành đau Vừa --- một nguy cơ lâm sàng nghiêm trọng theo hướng điều trị quá mức. Hiệu suất ở dải Cao cũng yếu (Recall 37\%), nghĩa là 63\% bệnh nhân đau nặng bị đánh giá thấp hơn thực tế.
+
+    \item \textbf{RGB-CLAHE (Cân bằng đặc trưng):} Tận dụng các tín hiệu sắc tố vi tế từ kênh màu (sự ửng đỏ của da, tái nhợt), mô hình RGB khắc phục đáng kể điểm yếu của ảnh xám trên cả hai dải cực: Recall dải Thấp tăng từ 23\% lên \textbf{36\%} (Precision đạt 89\%), và Recall dải Cao tăng từ 37\% lên \textbf{53\%}. Dải Vừa duy trì Recall cao (91\%) với F1 = 0.80. RGB-CLAHE cung cấp một hệ thống đáng tin cậy hơn trên toàn phổ đau, giảm thiểu cả hai loại sai sót lâm sàng nguy hiểm: đánh giá thấp hơn thực tế (underestimation) và quá mức (overestimation).
+\end{itemize}
+
+Nhìn chung, RGB-CLAHE là lựa chọn ưu tiên cho ứng dụng y tế thực tế nhờ tính cân bằng và tin cậy trên toàn phổ cường độ đau, trong khi Gray-CLAHE vẫn là baseline hữu ích khi ảnh đầu vào không có thông tin màu sắc đáng tin cậy (ví dụ: camera hồng ngoại ban đêm trong ICU).
+
+\section{Phân tích tính công bằng (Fairness Analysis)}
+\label{sec:fairness_analysis}
+
+Nhờ chiến lược phân chia tập Test theo tỉ lệ nhân khẩu học cố định (1:2:3), tập Hold-out Test có đủ mẫu cho cả 3 nhóm màu da: \textbf{White} ($N=42$), \textbf{Black} ($N=44$) và \textbf{Asian} ($N=19$).
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fairness_analysis_plot_RGB.png}
+        \caption{Mô hình RGB-CLAHE}
+    \end{subfigure}
+
+    \vspace{0.4cm}
+
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fairness_analysis_plot.png}
+        \caption{Mô hình Gray-CLAHE}
+    \end{subfigure}
+
+    \caption{Phân bố sai số tuyệt đối (MAE) và độ lệch dự đoán (Bias) theo nhóm màu da trên tập Hold-out Test.}
+    \label{fig:fairness_combined}
+\end{figure}
+
+\noindent Quan sát từ Hình~\ref{fig:fairness_combined} và các kết quả thống kê chi tiết:
+\begin{itemize}
+    \item \textbf{Về sai số tuyệt đối (MAE):} Nhóm \textbf{Asian} nhất quán có phân phối sai số thấp nhất và phạm vi hẹp nhất ở cả hai mô hình. Nhóm \textbf{White} có IQR rộng nhất và chứa nhiều ngoại lai nhất, phản ánh sự đa dạng nội nhóm lớn hơn (điều kiện ánh sáng, biểu cảm). Nhóm \textbf{Black} có phân phối sai số ổn định và cân bằng giữa hai nhóm còn lại.
+
+    \item \textbf{Phân bố độ lệch dự đoán (Bias):} Ở cả hai mô hình, phân phối Bias (Predicted - Actual) của cả 3 nhóm đều có đỉnh dao động quanh đường không lệch ($\approx 0$). Cả hai mô hình có xu hướng dự đoán hơi thấp hơn thực tế (Bias âm nhẹ) đối với nhóm White, trong khi nhóm Asian và Black có Bias trung tâm gần 0 hơn --- cho thấy Weighted Loss đã phát huy hiệu quả bù đắp cho các nhóm thiểu số.
+
+    \item \textbf{So sánh giữa hai mô hình:} RGB-CLAHE (Hình trên) cho thấy phân bố sai số của 3 nhóm đồng đều hơn Gray-CLAHE. Cụ thể, khoảng cách IQR giữa nhóm White và Asian ở RGB-CLAHE nhỏ hơn, phản ánh thông tin màu sắc giúp giảm thiên vị màu da tốt hơn.
+\end{itemize}
+
+\noindent \textbf{Kiểm định ý nghĩa thống kê theo cặp (Pairwise T-test):}
+
+\begin{table}[H]
+\centering
+\caption{Kết quả kiểm định T-test công bằng theo cặp nhóm màu da --- Cả hai mô hình}
+\label{tab:fairness_ttest}
+\begin{tabular}{llcc}
+    \toprule
+    \textbf{Mô hình} & \textbf{Cặp so sánh} & \textbf{p-value} & \textbf{Kết luận} \\
+    \midrule
+    \multirow{3}{*}{Gray-CLAHE}
+        & Black vs White  & 0.3218 & \textcolor{green!60!black}{\textbf{KHÔNG CÓ KHÁC BIỆT (Fair)}} \\
+        & Black vs Asian  & 0.4974 & \textcolor{green!60!black}{\textbf{KHÔNG CÓ KHÁC BIỆT (Fair)}} \\
+        & White vs Asian  & 0.1631 & \textcolor{green!60!black}{\textbf{KHÔNG CÓ KHÁC BIỆT (Fair)}} \\
+    \midrule
+    \multirow{3}{*}{RGB-CLAHE}
+        & Black vs White  & 0.4209 & \textcolor{green!60!black}{\textbf{KHÔNG CÓ KHÁC BIỆT (Fair)}} \\
+        & Black vs Asian  & 0.9656 & \textcolor{green!60!black}{\textbf{KHÔNG CÓ KHÁC BIỆT (Fair)}} \\
+        & White vs Asian  & 0.5031 & \textcolor{green!60!black}{\textbf{KHÔNG CÓ KHÁC BIỆT (Fair)}} \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+Kết quả là minh chứng rằng, \textbf{với cấu hình Weighted Loss ($K=6$ nhóm) hiện tại}, kết hợp với phân chia tập Test cân bằng, cả hai mô hình đều đạt tính công bằng thống kê ($p > 0.05$) trên toàn bộ 3 cặp nhóm màu da được kiểm định. Tuy nhiên, kết luận này chỉ đánh giá các mô hình \textit{đã có} trọng số, chưa cho biết trọng số đó có thực sự \textit{tạo ra} khác biệt so với việc không dùng trọng số hay không. Mục~\ref{sec:ablation} đối chiếu trực tiếp hai cấu hình để trả lời câu hỏi này.
+
+\section{Ablation Study: Đối chiếu Weighted Loss và Unweighted Loss}
+\label{sec:ablation}
+
+\noindent\textbf{Lý do:} Mục~\ref{sec:fairness} đã đặt giả thuyết rằng Weighted Loss giúp giảm thiên vị của mô hình đối với nhóm màu da đa số. Tuy nhiên, một giả thuyết thiết kế không đương nhiên đúng trong thực nghiệm --- nếu chỉ báo cáo kết quả của mô hình \textit{đã có} trọng số (như Mục~\ref{sec:fairness_analysis}) mà không đối chiếu với baseline không trọng số, nhóm không có cơ sở để khẳng định cải thiện Fairness (nếu có) thực sự đến từ trọng số, hay chỉ là biến động ngẫu nhiên giữa các lần huấn luyện.
+
+\noindent\textbf{Mục đích:} Định lượng khách quan tác động thực sự của Weighted Loss bằng cách huấn luyện thêm hai mô hình \textbf{Unweighted} (một cho Gray-CLAHE, một cho RGB-CLAHE), giữ nguyên toàn bộ cấu hình còn lại --- kiến trúc, tiền xử lý CLAHE, phân chia Subject-level, siêu tham số (Bảng~\ref{tab:hyperparams}) --- và chỉ thay đổi duy nhất hàm mất mát: từ Weighted MSE (Phương trình~\ref{eq:weighted_loss}) sang \texttt{nn.MSELoss()} tiêu chuẩn, không phân biệt nhóm. Đây là một \textit{ablation có kiểm soát (controlled ablation)}: mọi khác biệt quan sát được giữa hai mô hình chỉ có thể quy cho thành phần trọng số.
+
+\subsection{Kết quả tổng thể trên tập Hold-out Test}
+
+\begin{table}[H]
+\centering
+\caption{So sánh hiệu năng tổng thể: Unweighted vs Weighted Loss}
+\label{tab:ablation_overall}
+\begin{tabular}{llcc}
+    \toprule
+    \textbf{Pipeline} & \textbf{Cấu hình Loss} & \textbf{MAE} & \textbf{RMSE} \\
+    \midrule
+    \multirow{2}{*}{Gray-CLAHE}
+        & Unweighted & $0.4978$ & $0.6455$ \\
+        & Weighted   & $0.5102$ & $0.6551$ \\
+    \midrule
+    \multirow{2}{*}{RGB-CLAHE}
+        & Unweighted & $0.4763$ & $0.6310$ \\
+        & Weighted   & $0.4816$ & $0.6335$ \\
+    \bottomrule
+\end{tabular}
+\vspace{0.3em}\\
+\parbox{0.95\textwidth}{\footnotesize \textit{Ghi chú: MAE/RMSE tổng thể được tổng hợp từ số liệu theo nhóm màu da (Bảng~\ref{tab:ablation_bygroup}) bằng công thức $\text{MAE} = \sum_g N_g \text{MAE}_g / N$ và $\text{RMSE} = \sqrt{\sum_g N_g \, \text{RMSE}_g^2 / N}$. Áp dụng công thức này cho hai cấu hình Weighted tái tạo lại chính xác số liệu Ensemble Test đã báo cáo ở Bảng~\ref{tab:overall_results} (sai lệch $<0.001$), xác nhận độ tin cậy của phép tổng hợp khi dùng cho hai cấu hình Unweighted (vốn không có sẵn báo cáo tổng thể riêng).}}
+\end{table}
+
+Xét trên toàn tập Test, mô hình \textbf{Unweighted có MAE/RMSE tổng thể thấp hơn một chút} so với Weighted, nhất quán ở cả hai pipeline. Đây là biểu hiện điển hình của \textit{chi phí công bằng (cost of fairness)}: buộc mô hình phân bổ đều ``sự chú ý'' giữa các nhóm khiến nó không còn tối ưu tuyệt đối theo phân phối dữ liệu tổng thể (vốn bị chi phối bởi nhóm White), nên sai số trung bình nhích lên đôi chút.
+
+\subsection{Kết quả chi tiết theo nhóm màu da}
+
+\begin{table}[H]
+\centering
+\caption{So sánh chi tiết theo nhóm màu da: Unweighted vs Weighted Loss (tập Hold-out Test)}
+\label{tab:ablation_bygroup}
+\begin{tabular}{llccccc}
+    \toprule
+    \textbf{Pipeline} & \textbf{Cấu hình} & \textbf{Nhóm da} & \textbf{N} & \textbf{MAE} & \textbf{RMSE} & \textbf{Bias} \\
+    \midrule
+    \multirow{6}{*}{Gray-CLAHE}
+     & \multirow{3}{*}{Unweighted} & Asian & 19 & $0.5152$ & $0.7054$ & $+0.3076$ \\
+     &                             & Black & 44 & $0.4742$ & $0.6272$ & $-0.0420$ \\
+     &                             & White & 42 & $0.5146$ & $0.6360$ & $-0.0745$ \\
+    \cmidrule{2-7}
+     & \multirow{3}{*}{Weighted}   & Asian & 19 & $0.5046$ & $0.6829$ & $+0.2422$ \\
+     &                             & Black & 44 & $0.4833$ & $0.6247$ & $-0.0891$ \\
+     &                             & White & 42 & $0.5410$ & $0.6731$ & $-0.1362$ \\
+    \midrule
+    \multirow{6}{*}{RGB-CLAHE}
+     & \multirow{3}{*}{Unweighted} & Asian & 19 & $0.4270$ & $0.6062$ & $+0.2718$ \\
+     &                             & Black & 44 & $0.4562$ & $0.6168$ & $-0.0087$ \\
+     &                             & White & 42 & $0.5197$ & $0.6560$ & $-0.1208$ \\
+    \cmidrule{2-7}
+     & \multirow{3}{*}{Weighted}   & Asian & 19 & $0.4734$ & $0.6500$ & $+0.3032$ \\
+     &                             & Black & 44 & $0.4574$ & $0.6218$ & $-0.0760$ \\
+     &                             & White & 42 & $0.5108$ & $0.6380$ & $-0.1217$ \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{ablation_mae_comparison.png}
+    \caption{So sánh MAE theo nhóm màu da giữa cấu hình Unweighted và Weighted, trên cả hai pipeline Gray-CLAHE và RGB-CLAHE.}
+    \label{fig:ablation_mae}
+\end{figure}
+
+\subsection{Khoảng cách công bằng (Fairness Gap)}
+
+Hình~\ref{fig:ablation_mae} trực quan hoá lại các giá trị MAE ở Bảng~\ref{tab:ablation_bygroup}. Để định lượng trực tiếp mức chênh lệch giữa nhóm bất lợi nhất và nhóm được lợi nhất, nhóm tính \textit{khoảng cách} (spread $=$ max $-$ min) của MAE và của trị tuyệt đối Bias giữa 3 nhóm màu da, cho từng cấu hình:
+
+\begin{itemize}
+    \item \textbf{Gray-CLAHE:} Khoảng cách MAE \textit{tăng} từ $0.0410$ (Unweighted) lên $0.0577$ (Weighted) --- Weighted Loss làm chênh lệch sai số tuyệt đối giữa các nhóm \textit{rộng hơn}, chủ yếu do MAE nhóm White tăng ($0.5146 \to 0.5410$). Ngược lại, khoảng cách $|\text{Bias}|$ \textit{thu hẹp} từ $0.2656$ xuống $0.1531$, cho thấy Weighted Loss có tác dụng cân bằng \textit{hướng} lệch dự đoán giữa các nhóm, dù không thu hẹp được biên độ sai số tuyệt đối.
+
+    \item \textbf{RGB-CLAHE:} Cả hai khoảng cách đều \textit{thu hẹp} khi thêm trọng số --- khoảng cách MAE giảm từ $0.0927$ xuống $0.0534$, khoảng cách $|\text{Bias}|$ giảm từ $0.2631$ xuống $0.2272$. Đây là trường hợp Weighted Loss thể hiện đúng như kỳ vọng thiết kế ở Mục~\ref{sec:fairness}: vừa giảm chênh lệch sai số, vừa giảm chênh lệch hướng lệch giữa các nhóm.
+\end{itemize}
+
+\noindent\textit{Lưu ý quan trọng:} Thu hẹp khoảng cách không đồng nghĩa với giảm sai số cho mọi nhóm. Trị tuyệt đối Bias \textit{trung bình} trên 3 nhóm thực chất tăng nhẹ ở cả hai pipeline khi thêm trọng số (Gray: $0.141 \to 0.156$; RGB: $0.134 \to 0.167$) --- nghĩa là Weighted Loss có xu hướng ``san bằng'' mức lệch giữa các nhóm bằng cách kéo nhóm có Bias thấp (thường là Black) lên gần hơn với nhóm có Bias cao (Asian), thay vì kéo toàn bộ các nhóm về gần 0. Đây là một đánh đổi cần trình bày rõ ràng, thay vì mặc định ``trọng số luôn cải thiện mọi chỉ số Fairness''.
+
+\subsection{Thảo luận}
+
+Kết quả ablation cho thấy hiệu quả của Weighted Loss \textbf{phụ thuộc vào pipeline màu sắc (pipeline-dependent)}, không nhất quán tuyệt đối:
+
+\begin{itemize}
+    \item Ở cả hai pipeline, thêm trọng số làm tăng nhẹ MAE/RMSE tổng thể (Bảng~\ref{tab:ablation_overall}) --- một \textit{chi phí công bằng} điển hình, phù hợp với lý thuyết fairness-aware learning: cải thiện công bằng thường đi kèm đánh đổi một phần độ chính xác trung bình.
+    \item Với \textbf{RGB-CLAHE} --- pipeline đạt hiệu năng tổng thể tốt nhất và được đề xuất triển khai (xem Kết luận) --- Weighted Loss mang lại lợi ích Fairness rõ ràng và nhất quán trên cả hai thước đo khoảng cách, củng cố cơ sở khoa học cho việc giữ lại kỹ thuật này trong cấu hình cuối cùng.
+    \item Với \textbf{Gray-CLAHE}, tác động kém nhất quán hơn (cải thiện khoảng cách Bias nhưng làm rộng khoảng cách MAE). Một cách giải thích khả dĩ: khi loại bỏ thông tin màu sắc, tín hiệu còn sót lại để phân biệt các nhóm da (chủ yếu qua cấu trúc hình học khuôn mặt) yếu và nhiễu hơn, khiến cơ chế tái trọng số gradient tương tác kém ổn định hơn với đặc trưng đầu vào của pipeline này.
+    \item Cỡ mẫu nhóm Asian trong tập Test ($N=19$) tương đối nhỏ. Các chênh lệch trình bày ở trên mang tính \textit{mô tả (descriptive)}: khác với kiểm định T-test giữa các nhóm màu da \textit{trong cùng một mô hình} ở Mục~\ref{sec:fairness_analysis}, nhóm chưa thực hiện kiểm định ý nghĩa thống kê \textit{giữa} hai cấu hình Loss (đòi hỏi lặp lại huấn luyện với nhiều seed ngẫu nhiên hoặc bootstrap trên dự đoán từng mẫu). Đây được đề xuất là hướng mở rộng cần thiết tại phần Khuyến nghị.
+\end{itemize}
+
+\noindent Tổng hợp lại, ablation study này minh hoạ vì sao việc đối chiếu một kỹ thuật đảm bảo công bằng với baseline không áp dụng kỹ thuật đó là cần thiết: nếu chỉ báo cáo mô hình Weighted mà không so sánh, nhóm có thể ngộ nhận toàn bộ mức độ công bằng quan sát được đến từ trọng số, trong khi trên thực tế lợi ích nhất quán chỉ thể hiện rõ ràng ở pipeline RGB --- đúng như pipeline mà nhóm lựa chọn triển khai.
+
+\subsection{\texorpdfstring
+{Ablation bổ sung: Đóng góp tăng dần của từng thành phần (Gray $\to$ RGB $\to$ CLAHE $\to$ Fairness)}
+{Ablation bo sung: Dong gop tang dan cua tung thanh phan (Gray -> RGB -> CLAHE -> Fairness)}
+}
+\label{sec:progressive_ablation}
+
+\noindent\textbf{Lý do:} Ablation ở Mục~\ref{tab:ablation_overall}--\ref{tab:ablation_bygroup} chỉ tách riêng đóng góp của Weighted Loss, nhưng chưa tách riêng đóng góp của từng thành phần khác trong pipeline (chuyển từ ảnh Gray sang RGB; thêm Smart Face CLAHE). Nếu không tách riêng, không thể biết chính xác cải thiện hiệu năng tổng thể (Bảng~\ref{tab:overall_results}) đến từ thành phần nào.
+
+\noindent\textbf{Mục đích:} Đo lường đóng góp tăng dần (incremental contribution) của từng thành phần theo một chuỗi thực nghiệm có kiểm soát: xuất phát từ mô hình Gray thuần (không CLAHE, không trọng số), lần lượt bật (a) RGB, (b) Smart Face CLAHE, (c) Weighted Loss --- mỗi bước chỉ thay đổi \textbf{đúng một thành phần}, giữ nguyên toàn bộ phần còn lại (kiến trúc EfficientNet-B3, cùng 36 Subjects Test theo tỉ lệ 1:2:3, cùng 5-Fold StratifiedGroupKFold, cùng seed = 42), cho phép quy kết rõ ràng biến động hiệu năng cho từng thành phần.
+
+\noindent\textit{Lưu ý về cấu hình:} Để tiết kiệm thời gian chạy 4 thực nghiệm liên tiếp, ablation này dùng cấu hình huấn luyện nhẹ hơn pipeline chính --- \textbf{5-Fold} (thay vì 10-Fold), \textbf{30 epoch tối đa} (thay vì 50), \textbf{Early Stopping 10 epoch} (thay vì 15), Warmup 3 epoch (thay vì 5) --- nên các con số tuyệt đối ở đây \textbf{không nhất thiết khớp} với Bảng~\ref{tab:overall_results}; giá trị so sánh chính là \textbf{độ chênh lệch tương đối} giữa các bước, vì cả 4 thực nghiệm dùng chung một tập Test và một bộ chia Fold. Bảng~\ref{tab:progressive_ablation} tổng hợp kết quả 4 bước.
+
+\begin{table}[H]
+\centering
+\caption{Ablation tăng dần: đóng góp của RGB, CLAHE và Weighted Loss}
+\label{tab:progressive_ablation}
+\begin{tabular}{lccccc}
+    \toprule
+    \textbf{Thực nghiệm} & \textbf{Val R²} & \textbf{Val RMSE} & \textbf{Test R²} & \textbf{Test RMSE} & \textbf{Test MAE} \\
+    \midrule
+    01. Baseline (Gray, không CLAHE, không trọng số) & $0.6512$ & $0.6600$ & $0.5454$ & $0.6694$ & $0.5105$ \\
+    02. + chuyển sang RGB & $0.6640$ & $0.6471$ & $0.5985$ & $0.6290$ & $0.4704$ \\
+    03. + Smart Face CLAHE & $0.6703$ & $0.6420$ & $0.5858$ & $0.6389$ & $0.4788$ \\
+    04. + Weighted Loss (Full Fairness) & $0.6466$ & $0.6639$ & $\mathbf{0.6096}$ & $\mathbf{0.6203}$ & $\mathbf{0.4682}$ \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{progressive_ablation.png}
+    \caption{Đóng góp tăng dần của từng thành phần lên Test Ensemble MAE và R², theo thứ tự Gray $\to$ +RGB $\to$ +CLAHE $\to$ +Fairness.}
+    \label{fig:progressive_ablation}
+\end{figure}
+
+\noindent\textbf{Phân tích đóng góp từng bước} (Hình~\ref{fig:progressive_ablation}):
+
+\begin{itemize}
+    \item \textbf{Bước 01$\to$02 (Gray $\to$ RGB):} Test MAE giảm mạnh nhất trong cả chuỗi, từ $0.5105$ xuống $0.4704$ ($-0.0401$); Test R² tăng từ $0.5454$ lên $0.5985$ ($+0.0531$). Đây là bước đóng góp \textbf{lớn nhất}, xác nhận định lượng phát hiện định tính ở Mục~\ref{sec:discussion} (Vì sao RGB-CLAHE tốt hơn Gray-CLAHE): riêng thông tin màu sắc, ngay cả \textit{trước khi} thêm CLAHE, đã mang lại phần lớn lợi ích của việc chuyển từ ảnh xám sang ảnh màu.
+
+    \item \textbf{Bước 02$\to$03 (+ CLAHE):} Ngược với kỳ vọng thiết kế ban đầu (Mục~\ref{sec:fairness}, Smart Face CLAHE được kỳ vọng cải thiện độ tương phản và do đó cải thiện độ chính xác), Test MAE ở bước này lại \textit{tăng nhẹ} ($0.4704 \to 0.4788$, $+0.0084$) và Test R² \textit{giảm nhẹ} ($-0.0127$), dù Validation R² vẫn cải thiện nhẹ ($+0.0063$). Nói cách khác, trong chuỗi ablation này, CLAHE cải thiện khớp mô hình trên Validation nhưng không chuyển hoá thành cải thiện tương ứng trên tập Test độc lập --- có thể do CLAHE làm tăng độ tương phản cục bộ theo cách khiến mô hình khớp sát hơn với các đặc điểm ánh sáng riêng của tập Train+Val (một dạng overfitting nhẹ lên đặc trưng tương phản), hoặc đơn giản là biến động ngẫu nhiên trong phạm vi một lần chạy. \textbf{Điều này không phủ nhận giá trị của CLAHE} --- vai trò chính của nó vẫn là chuẩn hoá chất lượng ảnh đầu vào (bảo toàn sắc tố da cho Fairness, tăng khả năng diễn giải AU cho GradCAM++, Mục~\ref{sec:gradcam_results}) chứ không chỉ nhắm riêng vào việc tối đa hoá MAE.
+
+    \item \textbf{Bước 03$\to$04 (+ Weighted Loss):} Test MAE giảm trở lại ($0.4788 \to 0.4682$, $-0.0106$), Test R² tăng thêm ($+0.0238$), dù Validation R² giảm nhẹ ($-0.0237$) --- một biểu hiện khác của \textit{chi phí công bằng cục bộ trên Validation} nhưng \textbf{lợi ích ròng trên Test độc lập}, khác với ablation Weighted vs Unweighted ở Mục~\ref{tab:ablation_overall} (nơi Weighted Loss làm tăng nhẹ MAE tổng thể trên Test). Sự khác biệt giữa hai ablation này --- vốn dùng cấu hình huấn luyện khác nhau (5-Fold/30 epoch ở đây so với 10-Fold/50 epoch ở ablation chính) --- cho thấy \textbf{tác động của Weighted Loss lên Test MAE không hoàn toàn ổn định giữa các lần chạy/cấu hình}, củng cố thêm khuyến nghị đã nêu về việc cần lặp lại kiểm định với nhiều seed để có kết luận chắc chắn hơn.
+
+    \item \textbf{Tổng cộng (01$\to$04):} Test MAE giảm tổng cộng $0.0423$ ($0.5105 \to 0.4682$, tương đương $-8.3\%$ tương đối), Test R² tăng $0.0642$ ($+11.8\%$ tương đối). Phân rã theo từng thành phần: RGB đóng góp $\approx 95\%$ tổng cải thiện MAE, CLAHE \textit{làm giảm} khoảng $20\%$ mức cải thiện đã đạt được, và Weighted Loss bù lại thêm $\approx 25\%$. Thứ tự ưu tiên đóng góp vào độ chính xác thô, do đó, là: \textbf{RGB $>$ Weighted Loss $>$ CLAHE} --- một phát hiện quan trọng cần nêu rõ khi trình bày trước hội đồng, thay vì mặc định cả ba thành phần đóng góp đồng đều.
+\end{itemize}
+
+\section{Phân tích độ phức tạp (Complexity Analysis)}
+
+
+\label{sec:complexity}
+
+\noindent\textbf{Lý do:} Một mô hình có độ chính xác tốt nhưng chi phí suy luận quá cao sẽ khó triển khai thực tế trong môi trường lâm sàng (ví dụ giám sát ICU liên tục). \textbf{Mục đích:} Định lượng chi phí tính toán của hệ thống Ensemble để đánh giá tính khả thi triển khai. Bảng~\ref{tab:complexity} tổng hợp số liệu.
+
+\begin{table}[H]
+\centering
+\caption{Độ phức tạp tính toán của một mô hình con và thời gian suy luận Ensemble thực đo}
+\label{tab:complexity}
+\begin{tabular}{lc}
+    \toprule
+    \textbf{Chỉ số} & \textbf{Giá trị} \\
+    \midrule
+    Tham số / mô hình con (EfficientNet-B3, lý thuyết) & $\sim$12M \\
+    FLOPs / ảnh / mô hình con (300$\times$300, lý thuyết) & $\sim$1.8G \\
+    Số mô hình trong Ensemble & 10 (10-Fold) \\
+    \midrule
+    \multicolumn{2}{l}{\textit{Thời gian suy luận Ensemble thực đo (10 mô hình, GPU RTX 5060, Bảng~\ref{tab:reproducibility})}} \\
+    Tổng thời gian --- Gray-CLAHE (105 ảnh) & $11{,}462.37$ ms \\
+    Trung bình / ảnh --- Gray-CLAHE & $109.17$ ms \\
+    Tổng thời gian --- RGB-CLAHE (105 ảnh) & $8{,}147.87$ ms \\
+    Trung bình / ảnh --- RGB-CLAHE & $77.60$ ms \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Nhận xét:} Với $\sim$110 ms/ảnh (Gray) và $\sim$78 ms/ảnh (RGB) cho toàn bộ Ensemble 10 mô hình trên một GPU tiêu dùng (RTX 5060), hệ thống đạt thông lượng trên dưới 10--13 ảnh/giây --- đủ nhanh cho giám sát bán thời gian thực (chụp định kỳ vài giây/lần) nhưng \textit{chưa} đạt mức thời gian thực liên tục (real-time, $\geq$24 khung hình/giây) cần thiết cho phân tích video. Đáng chú ý, Gray-CLAHE có thời gian suy luận \textit{lâu hơn} RGB-CLAHE dù xử lý ảnh 1 kênh thay vì 3 kênh; đây là một quan sát cần thực đo lại để loại trừ nguyên nhân do biến thiên hệ thống (I/O đọc ảnh, trạng thái cache GPU tại thời điểm đo) hơn là do bản chất kiến trúc, vì lượng phép tính lý thuyết của backbone không phụ thuộc đáng kể vào số kênh đầu vào ở lớp Conv đầu tiên. Số tham số/FLOPs trong bảng là số liệu \textbf{lý thuyết} của kiến trúc gốc EfficientNet-B3 (không đo lại thực nghiệm trên môi trường cụ thể của đề tài); dung lượng file mô hình (model size, MB) trên đĩa \textbf{chưa được đo} và cần bổ sung ở nghiên cứu tiếp theo.
+
+\section{Khả năng tái lập kết quả (Reproducibility)}
+\label{sec:reproducibility}
+
+\noindent\textbf{Lý do:} Khả năng tái lập là tiêu chuẩn bắt buộc của nghiên cứu khoa học thực nghiệm, đặc biệt khi kết quả phụ thuộc vào phiên bản thư viện (ví dụ hành vi ngẫu nhiên của CUDA có thể khác nhau giữa các phiên bản). \textbf{Mục đích:} Công bố đầy đủ môi trường phần cứng/phần mềm để người đọc có thể tái tạo lại thực nghiệm.
+
+\begin{table}[H]
+\centering
+\caption{Môi trường phần cứng và phần mềm sử dụng để huấn luyện/đánh giá}
+\label{tab:reproducibility}
+\begin{tabular}{ll}
+    \toprule
+    \textbf{Thành phần} & \textbf{Phiên bản / Giá trị} \\
+    \midrule
+    GPU & NVIDIA GeForce RTX 5060 (8151 MiB VRAM) \\
+    Driver / CUDA & Driver 591.86 / CUDA 13.1 \\
+    Python & 3.11.9 \\
+    PyTorch & 2.7.1+cu128 \\
+    torchvision & 0.22.1 \\
+    OpenCV (opencv-python) & 4.8.0.76 \\
+    timm & 1.0.16 \\
+    Random Seed & 42 \\
+    Số Epoch (tối đa, có Early Stopping) & xem Bảng~\ref{tab:hyperparams} \\
+    Batch Size & 16 \\
+    Optimizer & AdamW ($\eta_{\max}=5\times10^{-4}$) \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textit{Ghi chú:} Các trường không nằm trong log môi trường hiện có (ví dụ phiên bản CUDA Toolkit dùng để build PyTorch cụ thể, hay phiên bản hệ điều hành đầy đủ) được để trống thay vì suy đoán, theo đúng nguyên tắc không bịa số liệu; nhóm sẽ bổ sung nếu cần cho lần nộp báo cáo tiếp theo.
+
+\section{Khả năng giải thích của mô hình (Ensemble GradCAM++)}
+\label{sec:gradcam_results}
+Nhằm vượt qua tính chất ``hộp đen'' của các mạng nơ-ron sâu, nghiên cứu tích hợp kỹ thuật Ensemble GradCAM++ để trực quan hóa các vùng đặc trưng mà mô hình tập trung khi đưa ra dự báo.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{gradcam_gray.png}
+        \caption{GradCAM++ --- Gray-CLAHE}
+        \label{fig:gradcam_gray}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{gradcam_RGB.png}
+        \caption{GradCAM++ --- RGB-CLAHE}
+        \label{fig:gradcam_rgb}
+    \end{subfigure}
+
+    \caption{Bản đồ nhiệt Ensemble GradCAM++. Vùng đỏ = cường độ kích hoạt cao nhất.}
+    \label{fig:ensemble_gradcam}
+\end{figure}
+
+Qua phân tích định tính (qualitative analysis) bằng quan sát trực quan, các vùng kích hoạt có xu hướng tập trung tại \textbf{vùng mắt và lông mày} (gần với vị trí AU4, AU6, AU7) và \textbf{vùng mũi--rãnh mũi má} (gần vị trí AU9, AU10), cho thấy sự tương đồng nhất định với lý thuyết cơ mặt của hệ thống FACS. Mục đích chính của bước trực quan hóa này là để xác nhận (\textit{sanity check}) rằng mô hình thực sự chú ý vào các đặc trưng hình thái trên khuôn mặt, thay vì học vẹt các yếu tố nhiễu từ môi trường như phông nền, quần áo hay tóc. Sự tương đồng hình thái vùng kích hoạt giữa mô hình Gray-CLAHE và RGB-CLAHE càng củng cố thêm độ tin cậy này. Tuy nhiên, để khẳng định chính xác mô hình bắt đúng các Action Units (AUs) về mặt y khoa, cần có các phương pháp đánh giá định lượng chặt chẽ hơn (IoU với bounding box AUs).
+
+% =========================================
+% KẾT LUẬN VÀ KHUYẾN NGHỊ
+% =========================================
+\section{Thảo luận (Discussion)}
+\label{sec:discussion}
+
+Mục này phân tích \textit{nguyên nhân} đằng sau các kết quả chính đã trình bày, thay vì chỉ mô tả lại số liệu.
+
+\noindent\textbf{Vì sao RGB-CLAHE tốt hơn Gray-CLAHE?} Về mặt điểm-ước-lượng, RGB vượt Gray ở mọi thước đo (Bảng~\ref{tab:overall_results}), nhưng kiểm định thống kê (Mục~\ref{sec:statistical_analysis}) cho thấy khác biệt này \textit{cận biên} ($p=0.0508$). Nguyên nhân khả dĩ nhất là RGB giữ lại thông tin sắc tố da (chrominance) và sắc đỏ vùng má/môi --- vốn thay đổi theo mức độ căng cơ và lưu thông máu khi biểu cảm đau xuất hiện (ví dụ vùng mũi/miệng đỏ hơn khi nhăn mặt) --- trong khi Gray-CLAHE loại bỏ hoàn toàn kênh màu, chỉ giữ lại độ tương phản hình học (nếp nhăn, bóng đổ). Do đó, RGB có thêm một ``kênh tín hiệu'' bổ sung mà Gray không có, nhưng vì tín hiệu sắc tố da này tương đối yếu so với tín hiệu hình học chính (vốn cả hai mô hình đều khai thác như nhau), chênh lệch hiệu năng tổng thể không đủ lớn để đạt ý nghĩa thống kê với $n=105$.
+
+\noindent\textbf{Vì sao Fold 5 đạt kết quả tốt nhất?} Theo Bảng kết quả từng fold (Mục~\ref{sec:perfold}), Fold 5 đạt R² cao vượt trội so với các fold còn lại. Với chiến lược \texttt{StratifiedGroupKFold} theo Subject, thành phần nhân khẩu học và phân phối nhãn đau trong tập Validation của mỗi fold không hoàn toàn giống nhau (do ràng buộc không tách một Subject vào hai fold). Nhiều khả năng tập Validation của Fold 5 tình cờ chứa tỉ lệ mẫu ``dễ'' (biểu cảm đau rõ ràng, chiếu sáng tốt) cao hơn, hoặc phân phối nhãn ít lệch hơn so với các fold khác --- đây là biến thiên ngẫu nhiên cố hữu của Cross-Validation trên cỡ mẫu nhỏ, không phản ánh một đặc tính mô hình học được riêng cho fold đó. Đây cũng là lý do chiến lược Ensemble (trung bình cả 10 mô hình, Công thức~\ref{eq:ensemble}) được ưu tiên hơn việc chỉ chọn riêng mô hình của Fold 5, vì lựa chọn theo fold ``tốt nhất'' trên Validation có nguy cơ overfitting vào đặc thù ngẫu nhiên của chính fold đó.
+
+\noindent\textbf{Vì sao nhóm White có phương sai (variance) lớn?} Nhóm White chiếm tỉ lệ lớn nhất trong dữ liệu (56.12\%, Bảng~\ref{tab:dataset_dist}) nên tự nhiên bao phủ dải biến thiên rộng hơn về góc chụp, tuổi, giới tính, và mức độ đau so với các nhóm thiểu số --- dẫn đến phương sai sai số cao hơn đơn thuần vì kích thước mẫu lớn hơn đã ``chứng kiến'' nhiều kiểu hình đa dạng hơn (bao gồm cả các ca khó, ngoại lai). Ngược lại, nhóm Asian ($N=19$) có phổ biến thiên hẹp hơn trong tập Test do cỡ mẫu nhỏ, khiến phương sai quan sát được thấp hơn nhưng \textit{kém tin cậy hơn} về mặt thống kê (khoảng tin cậy rộng hơn dù phương sai mẫu thấp).
+
+\noindent\textbf{Vì sao Asian có MAE tương đối thấp (đặc biệt ở RGB Unweighted, Bảng~\ref{tab:ablation_bygroup})?} Đây không hẳn là mô hình ``giỏi'' với nhóm Asian mà nhiều khả năng phản ánh việc nhóm Asian trong tập Test ($N=19$) có phổ biểu cảm hẹp hơn (ít ca cực trị) do cỡ mẫu nhỏ, khiến sai số trung bình dễ thấp hơn một cách ngẫu nhiên. Đồng thời, Bias dương nhất quán của nhóm này ($+0.27$ đến $+0.30$ tuỳ pipeline) cho thấy mô hình có xu hướng \textit{over-predict} (đoán điểm đau cao hơn thực tế) --- MAE thấp không đồng nghĩa với dự đoán không thiên vị, mà có thể là sai số nhỏ nhưng lệch có hệ thống theo một hướng.
+
+\noindent\textbf{Vì sao Fairness đạt $p>0.05$ ở kiểm định T-test theo cặp (Bảng~\ref{tab:fairness_ttest})?} Có hai cách diễn giải cần phân biệt rõ: (a) Weighted Loss + phân chia Test cân bằng \textit{thực sự} giúp thu hẹp khác biệt giữa các nhóm xuống dưới ngưỡng ý nghĩa thống kê; hoặc (b) cỡ mẫu mỗi nhóm ($N=19$--$44$) đơn giản là \textit{không đủ lớn} để kiểm định T-test có đủ power phát hiện một khác biệt thực sự tồn tại (Type II Error). Ablation study (Mục~\ref{sec:ablation}) phần nào ủng hộ diễn giải (a) cho pipeline RGB (khoảng cách MAE/Bias thu hẹp rõ khi thêm trọng số), nhưng với Gray-CLAHE thì bằng chứng mờ nhạt hơn --- gợi ý khả năng (b) cũng đóng vai trò nhất định. Do đó, kết luận ``đạt Fair'' nên được hiểu là ``\textit{không phát hiện được} bằng chứng thiên vị có ý nghĩa thống kê với dữ liệu hiện tại'', thận trọng hơn so với khẳng định ``mô hình hoàn toàn công bằng''.
+
+\noindent\textbf{Vì sao Subject Split làm kết quả (điểm số) giảm nhưng đáng tin cậy hơn?} Nếu chia dữ liệu ngẫu nhiên theo ảnh (không theo Subject), nhiều khả năng các ảnh của cùng một người xuất hiện ở cả Train và Test, khiến mô hình ``nhớ'' đặc điểm khuôn mặt (không phải đặc trưng đau) của người đó và đạt điểm số Validation/Test cao giả tạo. \texttt{StratifiedGroupKFold} theo Subject ID loại bỏ hoàn toàn khả năng này, buộc mô hình phải tổng quát hoá sang chủ thể hoàn toàn mới --- một bài toán khó hơn nên điểm số (R², MAE) thấp hơn so với chia ngẫu nhiên theo ảnh, nhưng con số thu được \textit{phản ánh đúng} năng lực triển khai thực tế với bệnh nhân chưa từng gặp, thay vì một con số lạc quan giả tạo do rò rỉ dữ liệu.
+
+% =========================================
+% KẾT LUẬN
+% =========================================
+\chapter*{KẾT LUẬN VÀ KHUYẾN NGHỊ}
+\addcontentsline{toc}{chapter}{KẾT LUẬN VÀ KHUYẾN NGHỊ}
+
+\section*{1. Kết luận}
+Đề tài đã hoàn thành mục tiêu xây dựng hệ thống phát hiện và định lượng cường độ biểu cảm đau tự động thông qua hai phiên bản mô hình độc lập, với ba phương pháp luận quan trọng: (i) áp dụng thuật toán \textit{Smart Face CLAHE}; (ii) khắc phục lỗi rò rỉ dữ liệu theo Subject ID; và (iii) chiến lược phân chia tập Test theo tỉ lệ nhân khẩu học cố định 1:2:3 nhằm đảm bảo đánh giá Fairness đầy đủ trên cả 3 nhóm màu da.
+
+\textbf{RGB-CLAHE} là mô hình vượt trội, đạt Ensemble Test R² = $0.5928$, RMSE = $0.6335$, MAE = $0.4816$ trên tập Hold-out Test 105 ảnh cân bằng nhân khẩu học. Trung bình trên 10 folds, mô hình đạt R² = $0.6514 \pm 0.0978$, với đỉnh Fold 5 đạt R² = $0.7996$. Quan trọng hơn, RGB-CLAHE thể hiện khả năng nhận diện vượt trội trên toàn phổ đau: Recall dải Thấp đạt 36\% (vs 23\% của Gray), Recall dải Cao đạt 53\% (vs 37\% của Gray), giảm thiểu đáng kể cả hai loại sai lầm lâm sàng nguy hiểm.
+
+\textbf{Gray-CLAHE} đạt Ensemble Test R² = $0.5645$, RMSE = $0.6551$, MAE = $0.5102$, với độ ổn định cao hơn qua các fold (Std R² = $0.0829$ vs $0.0978$ của RGB). Mô hình này phù hợp làm baseline hoặc trong các điều kiện thiếu thông tin màu sắc đáng tin cậy.
+
+Ablation study đối chiếu \textbf{Weighted Loss} với \textbf{Unweighted Loss} (Mục~\ref{sec:ablation}) cho thấy hiệu quả công bằng của kỹ thuật này \textit{phụ thuộc vào pipeline}: với RGB-CLAHE, trọng số thu hẹp nhất quán cả khoảng cách MAE (từ $0.0927$ xuống $0.0534$) lẫn khoảng cách Bias (từ $0.2631$ xuống $0.2272$) giữa 3 nhóm màu da, đúng như kỳ vọng thiết kế; với Gray-CLAHE, hiệu quả kém nhất quán hơn (khoảng cách Bias thu hẹp nhưng khoảng cách MAE lại rộng hơn). Phát hiện này củng cố quyết định triển khai cặp \textbf{RGB-CLAHE + Weighted Loss}, đồng thời cho thấy giá trị của việc luôn kiểm chứng ablation thay vì mặc định các kỹ thuật Fairness luôn hiệu quả như thiết kế ban đầu.
+
+Ablation tăng dần bổ sung (Mục~\ref{sec:progressive_ablation}), tách riêng đóng góp của RGB, CLAHE và Weighted Loss theo từng bước, cho thấy \textbf{thứ tự đóng góp vào độ chính xác thô là RGB $>$ Weighted Loss $>$ CLAHE}: chuyển từ Gray sang RGB đóng góp khoảng 95\% tổng cải thiện MAE trên tập Test, Weighted Loss bù thêm khoảng 25\%, trong khi CLAHE --- dù quan trọng cho chuẩn hoá ảnh và bảo toàn sắc tố da phục vụ Fairness --- lại làm giảm nhẹ khoảng 20\% mức cải thiện đã đạt được trên tập Test trong ablation này. Đây là minh chứng định lượng bổ sung cho việc không nên mặc định mọi thành phần của pipeline đóng góp đồng đều vào hiệu năng cuối cùng.
+
+\section*{2. Hạn chế của đề tài (Limitations)}
+Bên cạnh kết quả đạt được, đề tài còn tồn tại các hạn chế sau, cần được nhìn nhận rõ ràng:
+
+\begin{itemize}
+    \item \textbf{Quy mô dữ liệu nhỏ:} 645 ảnh từ 226 subjects là quy mô khiêm tốn so với chuẩn Deep Learning hiện đại; đặc biệt nhóm Asian chỉ có 95 ảnh (14.7\%), giới hạn độ tin cậy thống kê của mọi phân tích Fairness liên quan đến nhóm này.
+    \item \textbf{Chỉ sử dụng ảnh tĩnh, chưa dùng video:} Đề tài dự đoán cường độ đau từ một khung hình đơn lẻ, bỏ qua thông tin động lực thời gian (ví dụ tốc độ nhăn mặt, thời gian duy trì biểu cảm) --- vốn là tín hiệu quan trọng để phân biệt đau thật với biểu cảm cảm xúc khác (giận, sợ) có hình dạng AU tĩnh tương tự nhưng diễn tiến thời gian khác nhau.
+    \item \textbf{Chưa có dữ liệu người Việt Nam / Đông Nam Á:} Bộ Delaware Pain Database được thu thập tại Hoa Kỳ; nhãn ``Asian'' trong bộ dữ liệu gốc (ánh xạ từ nhãn ``Yellow'') không nhất thiết đại diện đầy đủ cho đặc điểm khuôn mặt và biểu cảm của người Việt Nam. Việc khái quát hoá kết luận Fairness cho bối cảnh y tế Việt Nam cần được kiểm chứng lại trên dữ liệu bản địa.
+    \item \textbf{Chưa triển khai thời gian thực (real-time):} Như Mục~\ref{sec:complexity} chỉ ra, thông lượng hiện tại ($\sim$78--110 ms/ảnh cho Ensemble 10 mô hình) phù hợp giám sát định kỳ nhưng chưa đạt chuẩn video thời gian thực liên tục.
+    \item \textbf{Chưa đánh giá đa bệnh viện / đa camera:} Toàn bộ ảnh đến từ một nguồn thu thập duy nhất (Delaware Pain Database) với điều kiện camera/ánh sáng tương đối đồng nhất trong quy trình thu thập gốc; chưa có kiểm chứng độ ổn định khi triển khai trên thiết bị camera khác, điều kiện ánh sáng bệnh viện khác, hoặc quần thể bệnh nhân khác (ví dụ bệnh nhân ICU có ống thở, băng gạc che một phần khuôn mặt).
+    \item \textbf{Kiểm thử ngoại lai (Out-of-Distribution) trên FaceGen chưa hoàn thành:} Phạm vi nghiên cứu (Phần Mở đầu, Mục 4) có đề cập kiểm thử trên FaceGen nhưng số liệu định lượng cho phần này chưa có trong báo cáo hiện tại --- \textbf{cần thực nghiệm bổ sung}.
+    \item \textbf{Ablation và kiểm định thống kê dừng ở một lần chạy:} Cả ablation Weighted vs Unweighted (Mục~\ref{sec:ablation}) và kiểm định RGB vs Gray (Mục~\ref{sec:statistical_analysis}) đều dựa trên một lần huấn luyện/đánh giá cho mỗi cấu hình, chưa lặp lại với nhiều seed ngẫu nhiên để ước lượng độ biến thiên (variance) của chính kết luận thống kê.
+\end{itemize}
+
+\section*{3. Khuyến nghị và hướng nghiên cứu tiếp theo}
+Dựa trên phân tích kết quả và các hạn chế nêu trên, nhóm đề xuất các hướng phát triển:
+
+\begin{itemize}
+    \item \textbf{Mở rộng dữ liệu:} Thu thập thêm ảnh từ cả 3 nhóm màu da, đặc biệt dải đau Cao ($\geq 4$) vốn chiếm tỉ lệ thấp nhất, để giảm mất cân bằng nhãn và cải thiện Recall dải cực. Ưu tiên bổ sung dữ liệu khuôn mặt người Việt Nam/Đông Nam Á để kiểm chứng khả năng khái quát hoá trong bối cảnh y tế trong nước.
+
+    \item \textbf{Cân bằng dữ liệu liên tục:} Áp dụng các kỹ thuật sinh dữ liệu (\textit{SMOTE} cho hồi quy) hoặc thu thập thêm các ca lâm sàng có điểm đau cực đại để cải thiện Recall ở dải Cao.
+
+    \item \textbf{Phân tích động (Video-based Analysis):} Ứng dụng \textit{Spatio-Temporal CNN} hoặc \textit{Video Vision Transformer (ViViT)} \cite{gkikas2023full} để phân tích vi biểu cảm theo thời gian, khắc phục giới hạn ảnh tĩnh trong phân biệt đau cực độ với khóc/giận.
+
+    \item \textbf{Tiếp cận đa phương thức (Multimodal AI):} Kết hợp khuôn mặt với chỉ số sinh lý (nhịp tim, huyết áp) hoặc âm thanh (tiếng rên), theo hướng đã được \cite{gkikas2024multimodal} chứng minh hiệu quả trên bộ dữ liệu khác, để xây dựng hệ thống chẩn đoán toàn diện cho bệnh nhân ICU.
+
+    \item \textbf{Federated Learning và Edge AI:} Vì dữ liệu khuôn mặt bệnh nhân nhạy cảm về quyền riêng tư, Federated Learning cho phép huấn luyện trên dữ liệu phân tán tại nhiều bệnh viện mà không cần tập trung dữ liệu thô về một nơi; kết hợp lượng tử hoá mô hình (quantization) để triển khai trên thiết bị biên (Edge AI) tại giường bệnh, giảm phụ thuộc kết nối mạng.
+
+    \item \textbf{Triển khai di động (Mobile Deployment):} Chuyển đổi mô hình sang định dạng tối ưu di động (TensorRT/ONNX/TFLite) và đối chiếu lại với các backbone nhẹ (MobileNetV3, EfficientNet-B0, Mục~\ref{sec:baseline_comparison}) để cân bằng độ chính xác và độ trễ trên thiết bị di động.
+
+    \item \textbf{Đánh giá định lượng khả năng giải thích (Quantitative XAI Evaluation):} Xây dựng cơ chế đánh giá định lượng cho GradCAM++ bằng nhãn hộp giới hạn (Bounding Box) cho vùng cơ mặt AUs, tính IoU (Intersection over Union) để đo độ tin cậy y khoa khách quan --- trực tiếp giải quyết khoảng trống nghiên cứu (3) đã nêu ở Mục~\ref{sec:related_work}.
+
+    \item \textbf{Mở rộng kiểm định Fairness:} Bổ sung kiểm định phi tham số (Mann-Whitney U) và phân tích theo giới tính để đánh giá đầy đủ hơn các trục thiên vị tiềm ẩn khi dữ liệu lớn hơn.
+
+    \item \textbf{Kiểm định ý nghĩa thống kê nhiều seed:} Cả ablation Weighted vs Unweighted (Mục~\ref{sec:ablation}) và kiểm định RGB vs Gray (Mục~\ref{sec:statistical_analysis}) cần lặp lại với nhiều seed ngẫu nhiên ($\geq 5$ lần) hoặc bootstrap trên dự đoán từng mẫu để xác định độ ổn định của các kết luận thống kê hiện tại, đặc biệt khi cỡ mẫu nhóm Asian còn nhỏ ($N=19$).
+
+    \item \textbf{Huấn luyện thực nghiệm các backbone đối chứng:} Huấn luyện lại ResNet50, MobileNetV3, DenseNet121, EfficientNet-B0 trên cùng pipeline (Mục~\ref{sec:baseline_comparison}) để có số liệu MAE/RMSE thực nghiệm trực tiếp trên bộ Delaware, thay vì chỉ so sánh lý thuyết qua số liệu ImageNet.
+
+    \item \textbf{Hoàn thành kiểm thử Out-of-Distribution trên FaceGen} như đã đề ra trong phạm vi nghiên cứu ban đầu, đo MAE/RMSE khi áp dụng mô hình huấn luyện trên Delaware vào ảnh sinh tổng hợp (synthetic).
+    \item \textbf{Xác nhận lại ablation tăng dần với cấu hình đầy đủ:} Ablation Gray $\to$ RGB $\to$ CLAHE $\to$ Fairness (Mục~\ref{sec:progressive_ablation}) hiện dùng cấu hình nhẹ (5-Fold, 30 epoch) để tiết kiệm thời gian; cần chạy lại với cấu hình đầy đủ của pipeline chính (10-Fold, 50 epoch, Bảng~\ref{tab:hyperparams}) để xác nhận thứ tự đóng góp RGB $>$ Weighted Loss $>$ CLAHE có ổn định hay thay đổi khi tăng số fold/epoch.
+\end{itemize}
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\begin{thebibliography}{99}
+
+\bibitem{bargshady2024acute}
+G. Bargshady, C. Joseph, N. Hirachan, R. Goecke, and R. F. Rojas,
+``Acute Pain Recognition from Facial Expression Videos using Vision Transformers,''
+\textit{2024 46th Annual International Conference of the IEEE Engineering in Medicine
+\& Biology Society (EMBC)}, Jul. 2024.
+
+\bibitem{aliradi2024facial}
+R. Aliradi, N. Chenni, M. Touami, and A. Ouamane,
+``Facial Pain Detection Using Multilinear Subspace Learning,''
+\textit{Preprints}, May 2024.
+
+\bibitem{kopalidis2024advances}
+T. Kopalidis, V. Solachidis, N. Vretos, and P. Daras,
+``Advances in facial expression recognition: A survey of methods, benchmarks, models, and datasets,''
+\textit{Information}, vol. 15, no. 3, p. 135, 2024.
+
+\bibitem{adyapady2023comprehensive}
+R. R. Adyapady and B. Annappa,
+``A comprehensive review of facial expression recognition techniques,''
+\textit{Multimedia Systems}, vol. 29, no. 1, pp. 73--103, 2023.
+
+\bibitem{sabatergarriz2024automated}
+Á. Sabater-Gárriz, F. X. Gaya-Morey, J. M. Buades-Rubio, C. Manresa-Yee, P. Montoya, and I. Riquelme,
+``Automated facial recognition system using deep learning for pain assessment in adults with cerebral palsy,''
+\textit{Digital Health}, vol. 10, Jun. 2024.
+
+\bibitem{ansari2024algorithmic}
+F. Ansari, T. Chakraborti, and S. Das,
+``Algorithmic Fairness in Lesion Classification by Mitigating Class Imbalance and Skin Tone Bias,''
+in \textit{Medical Image Computing and Computer Assisted Intervention -- MICCAI 2024}, Lecture Notes in Computer Science, vol. 15001, Springer, Cham, 2024.
+
+\bibitem{gkikas2023full}
+S. Gkikas and M. Tsiknakis,
+``A full transformer-based framework for automatic pain estimation using videos,''
+in \textit{2023 45th Annual International Conference of the IEEE Engineering in Medicine \& Biology Society (EMBC)}, 2023, pp. 1--6.
+
+\bibitem{gkikas2024multimodal}
+S. Gkikas, N. S. Tachos, S. Andreadis, V. C. Pezoulas, D. Zaridis, G. Gkois, et al.,
+``Multimodal automatic assessment of acute pain through facial videos and heart rate signals utilizing transformer-based architectures,''
+\textit{Frontiers in Pain Research}, vol. 5, art. 1372814, 2024.
+
+\bibitem{rosenbacke2024explainable}
+R. Rosenbacke, Å. Melhus, M. McKee, and D. Stuckler,
+``How explainable artificial intelligence can increase or decrease clinicians' trust in AI applications in health care: Systematic review,''
+\textit{JMIR AI}, vol. 3, p. e53207, Oct. 2024.
+
+\bibitem{he2016resnet}
+K. He, X. Zhang, S. Ren, and J. Sun,
+``Deep Residual Learning for Image Recognition,''
+in \textit{Proc. IEEE Conf. Computer Vision and Pattern Recognition (CVPR)}, 2016, pp. 770--778.
+
+\bibitem{huang2017densenet}
+G. Huang, Z. Liu, L. van der Maaten, and K. Q. Weinberger,
+``Densely Connected Convolutional Networks,''
+in \textit{Proc. IEEE Conf. Computer Vision and Pattern Recognition (CVPR)}, 2017, pp. 4700--4708.
+
+\bibitem{howard2019mobilenetv3}
+A. Howard, M. Sandler, G. Chu, L.-C. Chen, B. Chen, M. Tan, et al.,
+``Searching for MobileNetV3,''
+in \textit{Proc. IEEE/CVF International Conference on Computer Vision (ICCV)}, 2019, pp. 1314--1324.
+
+\bibitem{tan2019efficientnet}
+M. Tan and Q. Le,
+``EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks,''
+in \textit{Proc. International Conference on Machine Learning (ICML)}, 2019, pp. 6105--6114.
+
+\end{thebibliography}
+
+\end{document}

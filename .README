@@ -1,0 +1,36 @@
+
+dùng để mở môi trường ảo 
+.\venv\Scripts\activate
+
+
+python analyze_errors.py
+
+tắt môi trường ảo 
+deactivate
+
+pip install -r requirements.txt
+
+python -m venv venv
+
+python compare_runs.py `
+    --analysis_dir "error_analysis" `
+    --output_dir "analysis_results" `
+    --unedited_expr_dir "dataset_osfstorage-archive/Stimuli/Expression Images/Unedited_FaceCrops" `
+    --cropped_expr_dir "dataset_osfstorage-archive/Stimuli/Expression Images/Cropped and Standardized" `
+    --unedited_only_dir "dataset_osfstorage-archive/Stimuli/Neutral Only Images/Unedited_Only_FaceCrops" `
+    --cropped_only_dir "dataset_osfstorage-archive/Stimuli/Neutral Only Images/Cropped and Standardized"
+
+python generate_report.py `
+    --input_dir "error_analysis" `
+    --output_dir "reports" `
+    --unedited_expr_dir "dataset_osfstorage-archive/Stimuli/Expression Images/Unedited_FaceCrops" `
+    --cropped_expr_dir "dataset_osfstorage-archive/Stimuli/Expression Images/Cropped and Standardized" `
+    --unedited_only_dir "dataset_osfstorage-archive/Stimuli/Neutral Only Images/Unedited_Only_FaceCrops" `
+    --cropped_only_dir "dataset_osfstorage-archive/Stimuli/Neutral Only Images/Cropped and Standardized"
+
+python evaluate_champions.py
+
+docker build -t pain-predictor-api .
+docker run -p 8000:8000 pain-predictor-api
+
+uvicorn main:app --reload

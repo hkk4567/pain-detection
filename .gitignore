@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# ML / experiment
+wandb/
+checkpoints/
+
+# Dataset
+dataset_osfstorage-archive/
+exported_data/
+
+# Evaluation results
+eval_data_*/
+ablation_results/
+report_charts_auto/
+
+# Model outputs
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
